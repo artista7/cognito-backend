@@ -1,0 +1,7 @@
+*.pyc
+.*/__pycache__/.*
+..*pyc
+cloudformation-stack/*
+.vscode/*
+.env
+env_files

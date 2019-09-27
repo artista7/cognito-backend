@@ -1,0 +1,34 @@
+from django.contrib.auth.models import User
+from atnp.models import Round, Drive, JobOpening
+
+from rest_framework import serializers
+from .utils import get_college_id, get_company_id, get_student_id
+
+class RoundSerializer(serializers.ModelSerializer):
+    jobOpening_id = serializers.PrimaryKeyRelatedField(
+                   queryset=JobOpening.objects.all(), source='jobOpening')
+    nextRound_id = serializers.PrimaryKeyRelatedField(
+                   queryset=Round.objects.all(), source='nextRound')
+    class Meta:
+        model = Round
+        fields = ['id', 'jobOpening_id', 'nextRound_id', 'name', 'url',\
+                'manager', 'isInterview', 'startTime', 'endTime', 'deadline']
+
+    def validate(self, data):
+        super().validate(data)
+        # If user is college it can't update status field
+        request = self.context['request']
+        view = self.context['view']
+
+        college_id = get_college_id(request.user)
+        company_id = get_company_id(request.user)
+
+        if view.action == 'create' and not company_id:
+            raise serializers.ValidationError('Only a user associated with a company can create a record')
+
+        if view.action == 'create':
+            data_college_id = Drive.filter(id=drive_id)[0].college_id
+            if  data['company'].id != company_id:
+                raise serializers.ValidationError('You can only create a record with company id ' + \
+                                    'you are linked with')
+        return data
