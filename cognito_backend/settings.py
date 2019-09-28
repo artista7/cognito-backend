@@ -26,7 +26,7 @@ SECRET_KEY = 'g&tzx!*r@pe6c5u+_fhxyobzyrkyn432m*wx1v=7c72m3%pi=1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
