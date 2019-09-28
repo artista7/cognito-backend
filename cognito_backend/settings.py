@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'rest_framework_jwt',
     'generic_relations',
     'atnp',
-    'users'
+    'users',
+    'core'
 ]
 
 MIDDLEWARE = [
@@ -193,6 +194,7 @@ AUTH_USER_MODEL = 'users.User'
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Cognito
 COGNITO_AWS_REGION = os.environ['COGNITO_AWS_REGION']  # 'eu-central-1'
