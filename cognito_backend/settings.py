@@ -44,6 +44,14 @@ CORS_ALLOW_HEADERS = [
     'x-amz-date',
     'x-amz-security-token'
 ]
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
 # Application definition
 
 INSTALLED_APPS = [
