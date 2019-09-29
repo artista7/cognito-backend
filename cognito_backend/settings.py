@@ -41,7 +41,8 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-    'X-Amz-Security-Token'
+    'x-amz-date',
+    'x-amz-security-token'
 ]
 # Application definition
 
