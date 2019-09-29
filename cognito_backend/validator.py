@@ -5,7 +5,7 @@ import requests
 from django.conf import settings
 from django.core.cache import cache
 from django.utils.functional import cached_property
-from jwt.contrib.algorithms.pycrypto import RSAAlgorithm
+from jwt.algorithms import RSAAlgorithm
 
 
 class TokenError(Exception):
@@ -27,6 +27,7 @@ class TokenValidator:
 
     @cached_property
     def _json_web_keys(self):
+        print(self.pool_url + "/.well-known/jwks.json")
         response = requests.get(self.pool_url + "/.well-known/jwks.json")
         response.raise_for_status()
         json_data = response.json()
