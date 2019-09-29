@@ -2,10 +2,15 @@ from django.shortcuts import render
 
 # Create your views here.
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.decorators import api_view
 from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework import status
 
 from .models import User
+from atnp.serializers import CollegeSerializer, CompanySerializer, StudentSerializer
 from .serializers import CustomUserSerializer
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -26,3 +31,64 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             queryset = []
         return queryset
+
+
+@api_view(['POST'])
+def signup(request):
+    if request.method == 'POST':
+        data = request.data
+        if "college" in data:
+            college = data.pop("college")
+            user = CustomUserSerializer(data=data)
+            if not user.is_valid():
+                Response({"message": "BAD REQUEST"},
+                         status=status.HTTP_400_BAD_REQUEST)
+            # Check if college data is valid
+            user_object = user.save()
+            request.user = user_object
+            college = CollegeSerializer(
+                data=college, context={"request": request})
+            if not college.is_valid():
+                user_object.delete()
+                return Response({"message": "BAD REQUEST"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            college.save()
+        elif "company" in data:
+            company = data.pop("company")
+            user = CustomUserSerializer(data=data)
+            if not user.is_valid():
+                Response({"message": "BAD REQUEST"},
+                         status=status.HTTP_400_BAD_REQUEST)
+            # Check if college data is valid
+            user_object = user.save()
+            request.user = user_object
+            company = CompanySerializer(
+                data=company, context={"request": request})
+            if not company.is_valid():
+                user_object.delete()
+                return Response({"message": "BAD REQUEST"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            company.save()
+        elif "student" in data:
+            student = data.pop("student")
+            user = CustomUserSerializer(data=data)
+            if not user.is_valid():
+                Response({"message": "BAD REQUEST"},
+                         status=status.HTTP_400_BAD_REQUEST)
+            # Check if college data is valid
+            user_object = user.save()
+            request.user = user_object
+            student = StudentSerializer(
+                data=student, context={"request": request})
+            if not student.is_valid():
+                user_object.delete()
+                return Response({"message": "BAD REQUEST"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            student.save()
+        else:
+            return Response({"message": "At least one of college, student or company should be provided"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "User registration Successful!", "user": user.data})
+
+    return Response({"message": "SignUp only supports post requests!"},
+                    status=status.HTTP_405_METHOD_NOT_ALLOWED)

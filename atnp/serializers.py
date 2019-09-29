@@ -73,9 +73,16 @@ class DriveSerializer(serializers.ModelSerializer):
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
-        fields = ['id', 'name', 'aboutMe', 'education', 'userName', 'email',
+        fields = ['id', 'name', 'aboutMe', 'education', 'username', 'email',
                   'credits', 'profilePicS3Path', 'phoneNumber', 'skills', 'projects',
                   'work', 'createdAt', 'updatedAt']
+
+        extra_kwargs = {
+            "name": {"required": True},
+            "username": {"required": True},
+            "email": {"required": True},
+            "phoneNumber": {"required": True}
+        }
 
     def create(self, validate_data):
         user = self.context['request'].user

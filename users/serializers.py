@@ -1,7 +1,8 @@
-from atnp.models import  College, Student, Company
-from atnp.serializers import  CollegeSerializer, StudentSerializer, CompanySerializer
+from atnp.models import College, Student, Company
+from atnp.serializers import CollegeSerializer, StudentSerializer, CompanySerializer
 from .models import User
 from rest_framework import serializers
+
 
 class CustomUserSerializer(serializers.ModelSerializer):
     # studentId = serializers.PrimaryKeyRelatedField(queryset=Student.objects.all())
@@ -16,14 +17,13 @@ class CustomUserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'name', 'email',
                   'student', 'college', 'company',
-                   'phoneNumber', 
+                  'phoneNumber',
                   'createdAt', 'updatedAt']
         extra_kwargs = {
-                         "name": {"required": True},
-                         "email": {"required": True},
-                         "phoneNumber": {"required": True}
-                        }
+            "name": {"required": True},
+            "email": {"required": True},
+            "phoneNumber": {"required": True}
+        }
 
     def run_validation(self, data):
         return data
-
