@@ -13,6 +13,7 @@ jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
 jwt_get_username_from_payload = api_settings.JWT_PAYLOAD_GET_USERNAME_HANDLER
+jwt_response_payload_handler = api_settings.JWT_RESPONSE_PAYLOAD_HANDLER
 
 
 class CustomJsonWebTokenSerializer(JSONWebTokenSerializer):
@@ -30,13 +31,9 @@ class CustomJsonWebTokenSerializer(JSONWebTokenSerializer):
             'password': 'password1234'
         }
         if all(credentials.values()):
-            print(authenticate)
-            # user = authenticate(**credentials)
-            # print(user)
             validator = self.get_token_validator()
             user = validator.validate(credentials.get('cognito_token'))
             user = get_user_model().objects.get(username=user.get('cognito:username'))
-            print(user)
             if user:
                 # if not user.is_active:
                 #     msg = ('User account is disabled.')
