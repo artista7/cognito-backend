@@ -70,13 +70,14 @@ INSTALLED_APPS = [
     'users',
     'core'
 ]
+CSRF_TRUSTED_ORIGINS = ['localhost:3000', '*.learning-sage.com']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware', # Check about this more
+    'django.middleware.csrf.CsrfViewMiddleware',  # Check about this more
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
