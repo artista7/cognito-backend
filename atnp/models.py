@@ -393,8 +393,8 @@ class Student(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     # Field name made lowercase.
-    aboutMe = models.CharField(
-        db_column='aboutMe', max_length=255, blank=True, null=True)
+    profileInfo = JSONField(
+        db_column='profileInfo', blank=True, null=True)
     education = JSONField(blank=True, null=True)  # This field type is a guess.
     # Field name made lowercase.
     username = models.CharField(db_column='userName', max_length=255)
