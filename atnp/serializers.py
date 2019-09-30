@@ -73,7 +73,7 @@ class DriveSerializer(serializers.ModelSerializer):
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
-        fields = ['id', 'name', 'aboutMe', 'education', 'username', 'email',
+        fields = ['id', 'name', 'profileInfo', 'education', 'username', 'email',
                   'credits', 'profilePicS3Path', 'phoneNumber', 'skills', 'projects',
                   'work', 'createdAt', 'updatedAt']
 
