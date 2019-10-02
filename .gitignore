@@ -5,3 +5,5 @@ cloudformation-stack/*
 .vscode/*
 .env
 env_files
+atnp/node_modules/*
+static/

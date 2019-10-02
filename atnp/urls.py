@@ -6,7 +6,8 @@ from rest_framework import routers
 from .views import CollegeViewSet, StudentViewSet, CompanyViewSet,\
     DriveViewSet, StudentInDriveViewSet, CompanyInDriveViewSet,\
     ApplicationViewSet, JobViewSet, JobOpeningViewSet,\
-    RoundViewSet
+    RoundViewSet, ResumeViewSet, ResumeOpeningViewSet, org_users, block,\
+    unblock, register, import_students
 
 app_name = 'atnp'
 
@@ -17,13 +18,19 @@ router.register(r'drive', DriveViewSet)
 router.register(r'companyindrive', CompanyInDriveViewSet)
 router.register(r'studentindrive', StudentInDriveViewSet)
 router.register(r'college', CollegeViewSet)
-# router.register(r'user', UserViewSet)
 router.register(r'application', ApplicationViewSet)
 router.register(r'job', JobViewSet)
 router.register(r'jobopening', JobOpeningViewSet)
 router.register(r'round', RoundViewSet)
+router.register(r'resume', ResumeViewSet)
+router.register(r'resumeopening', ResumeOpeningViewSet)
 
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('org_user/', org_users),
+    url('^block_user/(?P<id>[0-9a-f-]+)/', block),
+    url('^unblock_user/(?P<id>[0-9a-f-]+)/', unblock),
+    url('^registerindrive/', register),
+    url('^import_students/', import_students)
 ]

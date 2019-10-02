@@ -6,6 +6,7 @@ from atnp.serializers import ApplicationSerializer
 from atnp.utils import get_student_id, get_company_id, get_college_id
 from atnp.permissions import GenericAccessPermission
 
+
 class ApplicationViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -23,6 +24,16 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         queryset = Application.objects.all()
         username = self.request.user
 
+        otherParams = self.request.query_params
+        queryfilters = {}
+        # Create additional query filters
+        if otherParams.get("companyId"):
+            queryfilters["jobOpening__companyInDrive__company__id"] = otherParams["companyId"]
+        if otherParams.get("studentId"):
+            queryfilters["studentInDrive__id"] = otherParams["studentId"]
+        if otherParams.get("driveId"):
+            queryfilters["studentInDrive__drive__id"] = otherParams["driveId"]
+
         if username:
             # First get the student_id, company_id, college_id
             student_id = get_student_id(username)
@@ -30,15 +41,18 @@ class ApplicationViewSet(viewsets.ModelViewSet):
             college_id = get_college_id(username)
             if student_id:
                 # Filterout all the applications student student
-                queryset = queryset.filter(studentInDrive__student_id=student_id)
+                queryset = queryset.filter(
+                    studentInDrive__student_id=student_id, **queryfilters)
                 # TODO:  Support additional queries
             elif company_id:
                 # Filterout all the applications for the company
-                queryset = queryset.filter(jobOpening__companyInDrive__company_id=company_id)
+                queryset = queryset.filter(
+                    jobOpening__companyInDrive__company_id=company_id, **queryfilters)
                 # TODO:  Support additional queries
             elif college_id:
                 # Filterout all the applications for the college
-                queryset = queryset.filter(jobOpening__companyInDrive__drive__college_id=college_id)
+                queryset = queryset.filter(
+                    jobOpening__companyInDrive__drive__college_id=college_id, **queryfilters)
                 # TODO:  Support additional queries
             else:
                 queryset = []

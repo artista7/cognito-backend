@@ -122,7 +122,7 @@ class Drive(models.Model):
     updatedAt = models.DateTimeField(db_column='updatedAt', auto_now=True)
     # Field name made lowercase.
     college = models.ForeignKey(
-        College, models.DO_NOTHING, db_column='college')
+        College, models.DO_NOTHING, db_column='college', related_name='drives')
 
     class Meta:
         db_table = 'drive'
@@ -184,7 +184,7 @@ class Job(models.Model):
     updatedAt = models.DateTimeField(db_column='updatedAt', auto_now=True)
     # Field name made lowercase.
     company = models.ForeignKey(
-        Company, models.DO_NOTHING, db_column='company')
+        Company, models.DO_NOTHING, db_column='company', related_name='jobs')
     # Field name made lowercase. This field type is a guess.
     equityJson = JSONField(db_column='equityJson', blank=True, null=True)
 
@@ -270,7 +270,7 @@ class Resume(models.Model):
     resumeUrl = models.CharField(
         db_column='resumeUrl', max_length=255, blank=True, null=True)
     # Field name made lowercase.
-    isEditable = models.CharField(
+    isEditable = models.BooleanField(
         db_column='isEditable', max_length=255, blank=True, null=True)
     # Field name made lowercase. This field type is a guess.
     resumeJson = JSONField(db_column='resumeJson', blank=True, null=True)
@@ -283,7 +283,7 @@ class Resume(models.Model):
     updatedAt = models.DateTimeField(db_column='updatedAt', auto_now=True)
     # Field name made lowercase.
     student = models.ForeignKey(
-        'Student', models.DO_NOTHING, db_column='student')
+        'Student', models.DO_NOTHING, db_column='student', related_name='resumes', blank=True, null=True)
     # studentInDriveId = models.ForeignKey('StudentInDrive', models.DO_NOTHING, db_column='studentInDriveId')  # Field name made lowercase.
 
     class Meta:
@@ -299,8 +299,10 @@ class ResumeOpening(models.Model):
     s3Path = models.TextField(
         db_column='s3Path', max_length=255, blank=True, null=True)
     # Field name made lowercase.
-    isEditable = models.CharField(
+    isEditable = models.BooleanField(
         db_column='isEditable', max_length=255, blank=True, null=True)
+    resumeUrl = models.CharField(
+        db_column='resumeUrl', max_length=255, blank=True, null=True)
     # Field name made lowercase. This field type is a guess.
     resumeJson = JSONField(db_column='resumeJson', blank=True, null=True)
     proofs = JSONField(blank=True, null=True)  # This field type is a guess.
@@ -320,7 +322,7 @@ class ResumeOpening(models.Model):
     resume = models.ForeignKey(Resume, models.DO_NOTHING, db_column='resume')
     # Field name made lowercase.
     studentInDrive = models.ForeignKey(
-        'StudentInDrive', models.DO_NOTHING, db_column='studentInDrive')
+        'StudentInDrive', models.DO_NOTHING, db_column='studentInDrive', related_name="resumeOpenings")
 
     class Meta:
         db_table = 'resumeopening'
@@ -453,7 +455,7 @@ class StudentInDrive(models.Model):
     drive = models.ForeignKey(Drive, models.DO_NOTHING, db_column='drive')
     # Field name made lowercase.
     student = models.ForeignKey(
-        Student, models.DO_NOTHING, db_column='student')
+        Student, models.DO_NOTHING, db_column='student', blank=True, null=True)
     proofs = JSONField(blank=True, null=True)  # This field type is a guess.
 
     class Meta:

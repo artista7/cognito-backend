@@ -6,6 +6,7 @@ from atnp.serializers import CompanyInDriveSerializer
 from atnp.utils import get_student_id, get_company_id, get_college_id
 from atnp.permissions import GenericAccessPermission
 
+
 class CompanyInDriveViewSet(viewsets.ModelViewSet):
     """
         API endpoint that allows users to be viewed or edited.
@@ -28,12 +29,22 @@ class CompanyInDriveViewSet(viewsets.ModelViewSet):
         queryset = CompanyInDrive.objects.all()
         company_id = get_company_id(username)
         college_id = get_college_id(username)
+
+        otherParams = self.request.query_params
+        queryfilters = {}
+        # Create additional query filters
+        if otherParams.get("companyName"):
+            queryfilters["company__name__contains"] = otherParams["companyName"]
+        if otherParams.get("status"):
+            queryfilters["status__in"] = otherParams["status"]
+
         if company_id:
             # Filterout all the applications for the company
             queryset = queryset.filter(company_id=company_id)
         elif college_id:
             # Filterout all the applications for the college
-            queryset = queryset.filter(drive__college_id=college_id)
+            queryset = queryset.filter(
+                drive__college_id=college_id, **queryfilters)
             # TODO:  Support additional queries
         else:
             queryset = []

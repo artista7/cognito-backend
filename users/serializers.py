@@ -25,5 +25,5 @@ class CustomUserSerializer(serializers.ModelSerializer):
             "phoneNumber": {"required": True}
         }
 
-    def run_validation(self, data):
-        return data
+    # def run_validation(self, data):
+    #     return data
