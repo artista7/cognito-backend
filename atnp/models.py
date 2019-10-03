@@ -98,7 +98,7 @@ class CompanyInDrive(models.Model):
         Company, models.DO_NOTHING, db_column='company')
     status = models.CharField(max_length=255)
     # Field name made lowercase.
-    driveId = models.ForeignKey('Drive', models.DO_NOTHING, db_column='drive')
+    drive = models.ForeignKey('Drive', models.DO_NOTHING, db_column='drive')
     # Field name made lowercase. This field type is a guess.
     reviewedby = JSONField(db_column='reviewedBy', blank=True, null=True)
 
@@ -216,7 +216,7 @@ class JobOpening(models.Model):
     # companyId = models.ForeignKey(Company, models.DO_NOTHING, db_column='companyId')  # Field name made lowercase.
     # Field name made lowercase.
     companyInDrive = models.ForeignKey(
-        CompanyInDrive, models.DO_NOTHING, db_column='companyInDrive')
+        CompanyInDrive, models.DO_NOTHING, db_column='companyInDrive', related_name='jobOpenings')
     # Field name made lowercase.
     job = models.ForeignKey(Job, models.DO_NOTHING, db_column='job')
 
