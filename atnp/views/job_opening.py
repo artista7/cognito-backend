@@ -11,7 +11,7 @@ class JobOpeningViewSet(viewsets.ModelViewSet):
     """
         API endpoint that allows users to be viewed or edited.
     """
-    permission_classes = (IsAuthenticated)
+    permission_classes = (IsAuthenticated,)
 
     queryset = JobOpening.objects.all().order_by('-name')
     serializer_class = JobOpeningSerializer

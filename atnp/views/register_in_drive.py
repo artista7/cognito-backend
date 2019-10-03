@@ -13,7 +13,7 @@ from atnp.serializers import CollegeSerializer, CompanySerializer, StudentSerial
 
 
 @api_view(['POST', ])
-@permission_classes((AllowAny, ))
+@permission_classes((IsAuthenticated, ))
 def register(request):
     if request.method == 'POST':
         data = request.data
