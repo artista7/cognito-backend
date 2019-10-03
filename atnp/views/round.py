@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from atnp.models import Round, College, StudentInDrive
 from atnp.serializers import RoundSerializer
 from atnp.utils import get_student_id, get_company_id, get_college_id
-from ..permissions import GenericAccessPermission
+
 
 class RoundViewSet(viewsets.ModelViewSet):
     """
@@ -13,7 +13,7 @@ class RoundViewSet(viewsets.ModelViewSet):
         - College: All rounds in the drive managed by college
         - Company: All rounds for the job opened by company
     """
-    permission_classes = (IsAuthenticated, GenericAccessPermission)
+    permission_classes = (IsAuthenticated, )
 
     queryset = Round.objects.all().order_by('-name')
     serializer_class = RoundSerializer
@@ -33,18 +33,22 @@ class RoundViewSet(viewsets.ModelViewSet):
             college_id = get_college_id(username)
             if student_id:
                 # Get the drive id in which the student is registered in
-                student_in_drives = StudentInDrive.objects.filter(student_id=student_id)
+                student_in_drives = StudentInDrive.objects.filter(
+                    student_id=student_id)
                 valid_drive_ids = [i.drive.id for i in student_in_drives]
                 # Filterout all the applications student student
-                queryset = queryset.filter(jobOpening__companyInDrive__drive_id__in=valid_drive_ids)
+                queryset = queryset.filter(
+                    jobOpening__companyInDrive__drive_id__in=valid_drive_ids)
                 # TODO:  Support additional queries
             elif company_id:
                 # Filterout all the applications for the company
-                queryset = queryset.filter(jobOpening__companyInDrive__company_id=company_id)
+                queryset = queryset.filter(
+                    jobOpening__companyInDrive__company_id=company_id)
                 # TODO:  Support additional queries
             elif college_id:
                 # Filterout all the applications for the college
-                queryset = queryset.filter(jobOpening__companyInDrive__drive__college_id=college_id)
+                queryset = queryset.filter(
+                    jobOpening__companyInDrive__drive__college_id=college_id)
                 # TODO:  Support additional queries
             else:
                 queryset = []

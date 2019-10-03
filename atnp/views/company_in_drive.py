@@ -4,7 +4,6 @@ from rest_framework import viewsets
 from atnp.models import CompanyInDrive, StudentInDrive
 from atnp.serializers import CompanyInDriveSerializer
 from atnp.utils import get_student_id, get_company_id, get_college_id
-from atnp.permissions import GenericAccessPermission
 
 
 class CompanyInDriveViewSet(viewsets.ModelViewSet):

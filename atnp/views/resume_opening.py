@@ -4,7 +4,6 @@ from rest_framework import viewsets
 from atnp.models import ResumeOpening, StudentInDrive
 from atnp.serializers import ResumeOpeningSerializer
 from atnp.utils import get_student_id, get_company_id, get_college_id
-from ..permissions import GenericAccessPermission
 
 
 class ResumeOpeningViewSet(viewsets.ModelViewSet):

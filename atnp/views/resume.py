@@ -3,7 +3,6 @@ from rest_framework import viewsets
 from atnp.models import Resume
 from atnp.serializers import ResumeSerializer
 from atnp.utils import get_student_id, get_company_id, get_college_id
-from ..permissions import GenericAccessPermission
 
 
 class ResumeViewSet(viewsets.ModelViewSet):
@@ -13,7 +12,7 @@ class ResumeViewSet(viewsets.ModelViewSet):
         - College: All rounds in the drive managed by college
         - Company: All rounds for the job opened by company
     """
-    permission_classes = (IsAuthenticated, GenericAccessPermission)
+    permission_classes = (IsAuthenticated, )
 
     queryset = Resume.objects.all().order_by('-name')
     serializer_class = ResumeSerializer

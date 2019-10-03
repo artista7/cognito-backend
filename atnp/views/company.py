@@ -4,13 +4,13 @@ from rest_framework import viewsets
 from atnp.models import Company
 from atnp.serializers import CompanySerializer
 from atnp.utils import get_company_id
-from atnp.permissions import GenericAccessPermission
+
 
 class CompanyViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    permission_classes = (IsAuthenticated, GenericAccessPermission)
+    permission_classes = (IsAuthenticated, )
 
     queryset = Company.objects.all().order_by('-name')
     serializer_class = CompanySerializer

@@ -4,14 +4,13 @@ from rest_framework import viewsets
 from atnp.models import Application
 from atnp.serializers import ApplicationSerializer
 from atnp.utils import get_student_id, get_company_id, get_college_id
-from atnp.permissions import GenericAccessPermission
 
 
 class ApplicationViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    permission_classes = (IsAuthenticated, GenericAccessPermission)
+    permission_classes = (IsAuthenticated,)
 
     queryset = Application.objects.all().order_by('-name')
     serializer_class = ApplicationSerializer
