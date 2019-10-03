@@ -99,7 +99,7 @@ class ResumeOpeningSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ResumeOpening
-        fields = ['id', 'title', 'resumeUrl', 'isEditable', 'resumeJson', 'versioningJson',
+        fields = ['id', 'title', 'status', 'resumeUrl', 'isEditable', 'resumeJson', 'versioningJson',
                   'studentInDriveId', 'resumeId',
                   'createdAt', 'updatedAt']
         extra_kwargs = {
