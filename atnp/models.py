@@ -1,5 +1,4 @@
 import uuid
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.contrib.postgres.fields import JSONField, ArrayField
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -464,26 +463,26 @@ class StudentInDrive(models.Model):
         db_table = 'studentindrive'
 
 
-class Subscription(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # Field name made lowercase.
-    user = models.ForeignKey(
-        get_user_model(), models.DO_NOTHING)
-    subscriptionId = models.CharField(max_length=255, unique=True)
-    createdAt = models.DateTimeField(db_column='createdAt', auto_now_add=True)
-    # Field name made lowercase.
-    updatedAt = models.DateTimeField(db_column='updatedAt', auto_now=True)
+# class Subscription(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     # Field name made lowercase.
+#     user = models.ForeignKey(
+#         User, models.DO_NOTHING)
+#     subscriptionId = models.CharField(max_length=255, unique=True)
+#     createdAt = models.DateTimeField(db_column='createdAt', auto_now_add=True)
+#     # Field name made lowercase.
+#     updatedAt = models.DateTimeField(db_column='updatedAt', auto_now=True)
 
-    class Meta:
-        db_table = 'subscription'
+#     class Meta:
+#         db_table = 'subscription'
 
 
-class Feed(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    subscriptionId = models.CharField(max_length=255, unique=True)
-    message = JSONField()
-    createdAt = models.DateTimeField(db_column='createdAt', auto_now_add=True)
-    updatedAt = models.DateTimeField(db_column='updatedAt', auto_now=True)
+# class Feed(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     subscriptionId = models.CharField(max_length=255, unique=True)
+#     message = JSONField()
+#     createdAt = models.DateTimeField(db_column='createdAt', auto_now_add=True)
+#     updatedAt = models.DateTimeField(db_column='updatedAt', auto_now=True)
 
-    class Meta:
-        db_table = 'feed'
+#     class Meta:
+#         db_table = 'feed'
