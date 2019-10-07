@@ -1,16 +1,20 @@
+import uuid
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.db.transaction import atomic
+
 from generic_relations.relations import GenericRelatedField
 
 from atnp.models import College, Student, StudentInDrive,\
     CompanyInDrive, Company, Drive, Job, JobOpening,\
     Application, Round, Admin, Resume, ResumeOpening
 from rest_framework import serializers
+from .custom_model_serializer import CustomModelSerializer
 from .utils import get_college_id, get_company_id, get_student_id
 
 
-class CollegeSerializerSimple(serializers.ModelSerializer):
+class CollegeSerializerSimple(CustomModelSerializer):
     class Meta:
         model = College
         fields = ['id', 'name', "alias", 'location',
@@ -18,7 +22,7 @@ class CollegeSerializerSimple(serializers.ModelSerializer):
                   'createdAt', 'updatedAt']
 
 
-class DriveSerializer(serializers.ModelSerializer):
+class DriveSerializer(CustomModelSerializer):
     collegeId = serializers.PrimaryKeyRelatedField(
         source='college', read_only=True)
     college = CollegeSerializerSimple(read_only=True)
@@ -48,7 +52,7 @@ class DriveSerializer(serializers.ModelSerializer):
         return data
 
 
-class CollegeSerializer(serializers.ModelSerializer):
+class CollegeSerializer(CustomModelSerializer):
 
     drives = DriveSerializer(read_only=True, many=True)
 
@@ -75,7 +79,7 @@ class CollegeSerializer(serializers.ModelSerializer):
         return college
 
 
-class ResumeSerializer(serializers.ModelSerializer):
+class ResumeSerializer(CustomModelSerializer):
     studentId = serializers.PrimaryKeyRelatedField(
         queryset=Student.objects.all(), source='student', required=False)
 
@@ -91,7 +95,7 @@ class ResumeSerializer(serializers.ModelSerializer):
         return resume
 
 
-class ResumeOpeningSerializer(serializers.ModelSerializer):
+class ResumeOpeningSerializer(CustomModelSerializer):
     studentInDriveId = serializers.PrimaryKeyRelatedField(
         queryset=StudentInDrive.objects.all(), source='studentInDrive')
     resumeId = serializers.PrimaryKeyRelatedField(
@@ -107,7 +111,7 @@ class ResumeOpeningSerializer(serializers.ModelSerializer):
         }
 
 
-class StudentSerializer(serializers.ModelSerializer):
+class StudentSerializer(CustomModelSerializer):
     resumes = ResumeSerializer(read_only=True, many=True)
 
     class Meta:
@@ -131,7 +135,7 @@ class StudentSerializer(serializers.ModelSerializer):
         return student
 
 
-class JobSerializer(serializers.ModelSerializer):
+class JobSerializer(CustomModelSerializer):
     companyId = serializers.PrimaryKeyRelatedField(
         source='company', read_only=True)
 
@@ -165,8 +169,59 @@ class JobSerializer(serializers.ModelSerializer):
         return job
 
 
-class JobOpeningSerializer(serializers.ModelSerializer):
+class RoundSerializer(CustomModelSerializer):
+    # jobOpening = JobOpeningSerializer(read_only=True)
+    jobOpeningId = serializers.PrimaryKeyRelatedField(
+        queryset=JobOpening.objects.all(), source='jobOpening')
+    nextRoundId = serializers.PrimaryKeyRelatedField(
+        queryset=Round.objects.all(), source='nextRound',
+        required=False, allow_null=True)
+
+    class Meta:
+        model = Round
+        fields = ['id', 'jobOpeningId',
+                  'nextRoundId', 'name', 'url',
+                  'manager', 'isInterview', 'startTime', 'endTime', 'deadline']
+        extra_kwargs = {
+            "jobOpening": {"read_only": True}
+        }
+
+    def validate(self, data):
+        super().validate(data)
+        # # If user is college it can't update status field
+        # request = self.context['request']
+        # view = self.context['view']
+
+        # college_id = get_college_id(request.user)
+        # company_id = get_company_id(request.user)
+
+        # if view.action == 'create' and not company_id:
+        #     raise serializers.ValidationError(
+        #         'Only a user associated with a company can create a record')
+
+        # if view.action == 'create':
+        #     if data['jobOpening'].company.id != company_id:
+        #         raise serializers.ValidationError('You can only create a record with company id ' +
+        #                                           'you are linked with')
+        return data
+
+    def create(self, data):
+        with atomic():
+            hiredRound = Round.objects.filter(
+                jobOpening__id=data["jobOpening"].id, name="Hired")[0]
+            lastRound = Round.objects.filter(
+                jobOpening__id=data["jobOpening"].id, nextRound__id=hiredRound.id)[0]
+            data["nextRound"] = hiredRound
+            round = Round(**data)
+            round.save()
+            lastRound.nextRound=round
+            lastRound.save()
+            return round
+
+
+class JobOpeningSerializer(CustomModelSerializer):
     job = JobSerializer(read_only=True)
+    rounds = RoundSerializer(many=True, read_only=True)
     # companyInDrive = CompanyInDriveSerializer(read_only=True)
     jobId = serializers.PrimaryKeyRelatedField(source='job',
                                                queryset=Job.objects.all())
@@ -175,7 +230,7 @@ class JobOpeningSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = JobOpening
-        fields = ['id', 'job', 'jobId', 'companyInDriveId', 'title', 'description',
+        fields = ['id', 'job', 'jobId', 'companyInDriveId', 'title', 'description', 'rounds',
                   'positionType', 'role', 'skills', 'location', 'ctcJson', 'equityJson', 'requirements',
                   'responsibilities', 'criteriaJson', 'status', 'createdAt', 'updatedAt']
 
@@ -199,8 +254,35 @@ class JobOpeningSerializer(serializers.ModelSerializer):
         #                             'you are linked with')
         return data
 
+    def create(self, validated_data):
+        with atomic():
+            jobOpening = super().create(validated_data)
+            round2 = {
+                "jobOpeningId": jobOpening.id,
+                "name": "Hired",
+                "nextRoundId": None,
+                "canEdit": False,
+                "canDelete": False,
+                "isInterview": False,
+            }
+            round2 = RoundSerializer(data=round2, context=self.context)
+            round2.is_valid(raise_exception=True)
+            round2 = round2.save()
+            round1 = {
+                "jobOpeningId": jobOpening.id,
+                "name": "Applications",
+                "nextRoundId": round2.id,
+                "canEdit": False,
+                "canDelete": False,
+                "isInterview": False,
+            }
+            round1 = RoundSerializer(data=round1, context=self.context)
+            round1.is_valid(raise_exception=True)
+            round1.save()
+            return jobOpening
 
-class CompanySerializer(serializers.ModelSerializer):
+
+class CompanySerializer(CustomModelSerializer):
     jobs = JobSerializer(many=True, read_only=True)
 
     class Meta:
@@ -216,7 +298,7 @@ class CompanySerializer(serializers.ModelSerializer):
         return company
 
 
-class CompanyInDriveSerializer(serializers.ModelSerializer):
+class CompanyInDriveSerializer(CustomModelSerializer):
     companyId = serializers.PrimaryKeyRelatedField(
         queryset=Company.objects.all(), source='company')
     driveId = serializers.PrimaryKeyRelatedField(
@@ -247,7 +329,7 @@ class CompanyInDriveSerializer(serializers.ModelSerializer):
         return data
 
 
-class StudentInDriveSerializer(serializers.ModelSerializer):
+class StudentInDriveSerializer(CustomModelSerializer):
     studentId = serializers.PrimaryKeyRelatedField(
         queryset=Student.objects.all(), source='student',
         allow_null=True, required=False)
@@ -283,66 +365,39 @@ class StudentInDriveSerializer(serializers.ModelSerializer):
         return data
 
 
-class RoundSerializer(serializers.ModelSerializer):
-    jobOpening = JobOpeningSerializer(read_only=True)
-    jobOpeningId = serializers.PrimaryKeyRelatedField(
-        queryset=JobOpening.objects.all(), source='jobOpening')
-    nextRoundId = serializers.PrimaryKeyRelatedField(
-        queryset=Round.objects.all(), source='nextRound', required=False)
-
-    class Meta:
-        model = Round
-        fields = ['id', 'jobOpening', 'jobOpeningId',
-                  'nextRoundId', 'name', 'url',
-                  'manager', 'isInterview', 'startTime', 'endTime', 'deadline']
-        extra_kwargs = {
-            "jobOpening": {"read_only": True}
-        }
-
-    def validate(self, data):
-        super().validate(data)
-        # If user is college it can't update status field
-        request = self.context['request']
-        view = self.context['view']
-
-        college_id = get_college_id(request.user)
-        company_id = get_company_id(request.user)
-
-        if view.action == 'create' and not company_id:
-            raise serializers.ValidationError(
-                'Only a user associated with a company can create a record')
-
-        if view.action == 'create':
-            if data['jobOpening'].company.id != company_id:
-                raise serializers.ValidationError('You can only create a record with company id ' +
-                                                  'you are linked with')
-        return data
-
-
-class ApplicationSerializer(serializers.ModelSerializer):
+class ApplicationSerializer(CustomModelSerializer):
     studentInDrive = StudentInDriveSerializer(read_only=True)
     jobOpening = JobOpeningSerializer(read_only=True)
+    resumeOpening = ResumeOpeningSerializer(read_only=True)
+
     roundId = serializers.PrimaryKeyRelatedField(source='round',
-                                                 queryset=Round.objects.all())
+                                                 queryset=Round.objects.all(),
+                                                 required=False, default=None)
     round = RoundSerializer(read_only=True)
 
     studentInDriveId = serializers.PrimaryKeyRelatedField(source='studentInDrive',
                                                           queryset=StudentInDrive.objects.all())
     jobOpeningId = serializers.PrimaryKeyRelatedField(source='jobOpening',
-                                                      queryset=StudentInDrive.objects.all())
+                                                      queryset=JobOpening.objects.all())
 
     nextApplicantId = serializers.PrimaryKeyRelatedField(source='nextApplicant',
-                                                         queryset=Application.objects.all())
+                                                         queryset=Application.objects.all(),
+                                                         required=False, default=None)
+
+    resumeOpeningId = serializers.PrimaryKeyRelatedField(source='resumeOpening',
+                                                         queryset=ResumeOpening.objects.all(),
+                                                         required=False, default=None)
 
     class Meta:
         model = Application
-        fields = ['studentInDriveId', 'jobOpeningId', 'nextApplicantId',
+        fields = ['id', 'studentInDriveId', 'jobOpeningId', 'nextApplicantId',
                   'jobOpening', 'round', 'roundId',
-                  'studentInDrive', 'previousRounds',
+                  'studentInDrive', 'previousRounds', 'resumeOpeningId', 'resumeOpening',
                   'status']
         extra_kwargs = {
             "jobOpening": {"read_only": True},
-            "studentInDrive": {"read_only": True}
+            "studentInDrive": {"read_only": True},
+            "status": {"required": False}
         }
 
     def validate(self, data):
@@ -369,16 +424,70 @@ class ApplicationSerializer(serializers.ModelSerializer):
         #         raise serializers.ValidationError('You can only apply in job opened in the drive you are registered!')
         return data
 
+    def create(self, data):
+        applicationRound = Round.objects.filter(
+            jobOpening__id=data["jobOpening"].id, name="Applications")[0]
+        data["round"] = applicationRound
+        application = Application.objects.create(**data)
+        temp = Application.objects.filter(companyInDrive__id=application.companyInDrive.id,
+                                          round__name="Application",
+                                          nextApplicant=None)
+        if temp:
+            temp[0].nextApplicant = application
+            temp[0].save()
+        return application
 
-class AdminSerializer(serializers.ModelSerializer):
+
+class AdminSerializer(CustomModelSerializer):
     class Meta:
         model = Admin
         fields = ['id', 'name', 'username', 'email', 'phoneNumber',
                   'metadata', 'status', 'createdAt', 'updatedAt']
 
 
-class GroupSerializer(serializers.ModelSerializer):
+class GroupSerializer(CustomModelSerializer):
     class Meta:
         model = Group
         fields = ['id', 'name', 'organizationId', 'organizationType', 'permission',
                   'createdAt', 'updatedAt']
+
+
+class StudentApplicationSerializer(CustomModelSerializer):
+    companyName = serializers.SerializerMethodField()
+    companyId = serializers.SerializerMethodField()
+
+    studentInDrive = StudentInDriveSerializer(read_only=True)
+    jobOpening = JobOpeningSerializer(read_only=True)
+    resumeOpening = ResumeOpeningSerializer(read_only=True)
+    round = RoundSerializer(read_only=True)
+
+    studentInDriveId = serializers.PrimaryKeyRelatedField(source='studentInDrive',
+                                                          queryset=StudentInDrive.objects.all())
+    jobOpeningId = serializers.PrimaryKeyRelatedField(source='jobOpening',
+                                                      queryset=JobOpening.objects.all())
+
+    nextApplicantId = serializers.PrimaryKeyRelatedField(source='nextApplicant',
+                                                         queryset=Application.objects.all(),
+                                                         required=False, default=None)
+
+    resumeOpeningId = serializers.PrimaryKeyRelatedField(source='resumeOpening',
+                                                         queryset=ResumeOpening.objects.all(),
+                                                         required=False, default=None)
+
+    class Meta:
+        model = Application
+        fields = ['id', 'studentInDriveId', 'jobOpeningId', 'nextApplicantId',
+                  'jobOpening', 'round',
+                  'studentInDrive', 'previousRounds', 'resumeOpeningId', 'resumeOpening',
+                  'status', 'companyName', 'companyId']
+        extra_kwargs = {
+            "jobOpening": {"read_only": True},
+            "studentInDrive": {"read_only": True},
+            "status": {"required": False}
+        }
+
+    def get_companyName(self, obj):
+        return obj.jobOpening.companyInDrive.company.name
+
+    def get_companyId(self, obj):
+        return obj.jobOpening.companyInDrive.company.id

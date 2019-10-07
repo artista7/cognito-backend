@@ -26,11 +26,20 @@ class RoundViewSet(viewsets.ModelViewSet):
         queryset = Round.objects.all()
         username = self.request.user
 
+        otherParams = self.request.query_params
+        queryfilters = {}
+        # Create additional query filters
+        if "companyInDriveId" in otherParams:
+            queryfilters["jobOpening__companyInDrive__id"] = otherParams["companyInDriveId"]
+        if "jobOpeningId" in otherParams:
+            queryfilters["jobOpening__id"] = otherParams["jobOpeningId"]
+
         if username:
             # First get the student_id, company_id, college_id
             student_id = get_student_id(username)
             company_id = get_company_id(username)
             college_id = get_college_id(username)
+
             if student_id:
                 # Get the drive id in which the student is registered in
                 student_in_drives = StudentInDrive.objects.filter(
@@ -38,17 +47,17 @@ class RoundViewSet(viewsets.ModelViewSet):
                 valid_drive_ids = [i.drive.id for i in student_in_drives]
                 # Filterout all the applications student student
                 queryset = queryset.filter(
-                    jobOpening__companyInDrive__drive_id__in=valid_drive_ids)
+                    jobOpening__companyInDrive__drive_id__in=valid_drive_ids, **queryfilters)
                 # TODO:  Support additional queries
             elif company_id:
                 # Filterout all the applications for the company
                 queryset = queryset.filter(
-                    jobOpening__companyInDrive__company_id=company_id)
+                    jobOpening__companyInDrive__company_id=company_id, **queryfilters)
                 # TODO:  Support additional queries
             elif college_id:
                 # Filterout all the applications for the college
                 queryset = queryset.filter(
-                    jobOpening__companyInDrive__drive__college_id=college_id)
+                    jobOpening__companyInDrive__drive__college_id=college_id, **queryfilters)
                 # TODO:  Support additional queries
             else:
                 queryset = []

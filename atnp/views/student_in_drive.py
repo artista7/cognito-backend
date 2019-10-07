@@ -25,8 +25,8 @@ class StudentInDriveViewSet(viewsets.ModelViewSet):
         otherParams = self.request.query_params
         queryfilters = {}
         # Create additional query filters
-        if otherParams.get("studentName"):
-            queryfilters["studentName__contains"] = otherParams["studentName"]
+        if otherParams.get("searchText"):
+            queryfilters["student__name__contains"] = otherParams["searchText"]
         if otherParams.get("status"):
             queryfilters["status__in"] = otherParams["status"]
 

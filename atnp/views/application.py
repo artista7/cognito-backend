@@ -32,6 +32,8 @@ class ApplicationViewSet(viewsets.ModelViewSet):
             queryfilters["studentInDrive__id"] = otherParams["studentId"]
         if otherParams.get("driveId"):
             queryfilters["studentInDrive__drive__id"] = otherParams["driveId"]
+        if otherParams.get("jobOpeningId"):
+            queryfilters["jobOpening__id"] = otherParams["jobOpeningId"]
 
         if username:
             # First get the student_id, company_id, college_id

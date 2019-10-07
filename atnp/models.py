@@ -1,4 +1,5 @@
 import uuid
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.contrib.postgres.fields import JSONField, ArrayField
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -35,10 +36,11 @@ class Application(models.Model):
     # Field name made lowercase.
     updatedAt = models.DateTimeField(db_column='updatedAt', auto_now=True)
     # Field name made lowercase.
-    resumeOpeningId = models.ForeignKey(
+    resumeOpening = models.ForeignKey(
         'ResumeOpening', models.DO_NOTHING, db_column='resumeOpening')
     # Field name made lowercase.
-    round = models.ForeignKey('Round', models.DO_NOTHING, db_column='round')
+    round = models.ForeignKey(
+        'Round', models.DO_NOTHING, db_column='round', blank=True, null=True)
     # Field name made lowercase.
     jobOpening = models.ForeignKey(
         'JobOpening', models.DO_NOTHING, db_column='jobOpening')
@@ -48,6 +50,7 @@ class Application(models.Model):
     # Field name made lowercase.
     studentInDrive = models.ForeignKey(
         'StudentInDrive', models.DO_NOTHING, db_column='studentInDrive')
+    # Field name made lowercase.
 
     class Meta:
         db_table = 'application'
@@ -362,20 +365,19 @@ class Round(models.Model):
     url = models.CharField(max_length=255, blank=True, null=True)
     manager = models.CharField(max_length=255, blank=True, null=True)
     # Field name made lowercase.
-    canEdit = models.CharField(
-        max_length=255, db_column='canEdit', blank=True, null=True)
+    canEdit = models.BooleanField(db_column='canEdit', blank=True, null=True)
     # Field name made lowercase.
-    canDelete = models.CharField(
-        max_length=255, db_column='canDelete', blank=True, null=True)
+    canDelete = models.BooleanField(
+        db_column='canDelete', blank=True, null=True)
     # Field name made lowercase.
-    isInterview = models.CharField(
-        max_length=255, db_column='isInterview', blank=True, null=True)
+    isInterview = models.BooleanField(
+        db_column='isInterview', blank=True, null=True)
     # Field name made lowercase.
     endTime = models.DateTimeField(db_column='endTime', blank=True, null=True)
     deadline = models.DateTimeField(blank=True, null=True)
     # Field name made lowercase.
     jobOpening = models.ForeignKey(
-        JobOpening, models.DO_NOTHING, db_column='jobOpening')
+        JobOpening, models.DO_NOTHING, db_column='jobOpening', related_name="rounds")
     # Field name made lowercase.
     createdAt = models.DateTimeField(db_column='createdAt', auto_now_add=True)
     # Field name made lowercase.
@@ -462,29 +464,26 @@ class StudentInDrive(models.Model):
         db_table = 'studentindrive'
 
 
-# class UserProfile(models.Model):
-#     # song title
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     user = models.ForeignKey(User, unique=True, on_delete=models.CASCADE)
-#     name = models.CharField(max_length=255, null=False)
-#     location = models.CharField(max_length=255, null=False)
-#     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE)
-#     college = models.ForeignKey(College, null=True, on_delete=models.CASCADE)
-#     student = models.ForeignKey(Student, null=True, on_delete=models.CASCADE)
+class Subscription(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # Field name made lowercase.
+    user = models.ForeignKey(
+        get_user_model(), models.DO_NOTHING)
+    subscriptionId = models.CharField(max_length=255, unique=True)
+    createdAt = models.DateTimeField(db_column='createdAt', auto_now_add=True)
+    # Field name made lowercase.
+    updatedAt = models.DateTimeField(db_column='updatedAt', auto_now=True)
 
-#     role = models.CharField(max_length=255, null=False)
-#     phoneNuber = models.CharField(max_length=255, null=False)
-#     # User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
+    class Meta:
+        db_table = 'subscription'
 
-#     def __str__(self):
-#         return "{}".format(self.name)
 
-#     @property
-#     def access_id(self):
-#         if self.company:
-#             return "Company_{}".format(self.company.id)
-#         if self.college:
-#             return "College_{}".format(self.college.id)
-#         if self.student:
-#             return "Student_{}".format(self.student.id)
-#         return "User_{}".format(self.user.id)
+class Feed(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    subscriptionId = models.CharField(max_length=255, unique=True)
+    message = JSONField()
+    createdAt = models.DateTimeField(db_column='createdAt', auto_now_add=True)
+    updatedAt = models.DateTimeField(db_column='updatedAt', auto_now=True)
+
+    class Meta:
+        db_table = 'feed'

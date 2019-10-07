@@ -7,7 +7,7 @@ from .views import CollegeViewSet, StudentViewSet, CompanyViewSet,\
     DriveViewSet, StudentInDriveViewSet, CompanyInDriveViewSet,\
     ApplicationViewSet, JobViewSet, JobOpeningViewSet,\
     RoundViewSet, ResumeViewSet, ResumeOpeningViewSet, org_users, block,\
-    unblock, register, import_students
+    unblock, register, import_students, edit_application_order, student_applications
 
 app_name = 'atnp'
 
@@ -32,5 +32,7 @@ urlpatterns = [
     url('^block_user/(?P<id>[0-9a-f-]+)/', block),
     url('^unblock_user/(?P<id>[0-9a-f-]+)/', unblock),
     url('^registerindrive/', register),
-    url('^import_students/', import_students)
+    url('^import_students/', import_students),
+    url('^edit_application_order/', edit_application_order),
+    url('^student_applications/', student_applications)
 ]

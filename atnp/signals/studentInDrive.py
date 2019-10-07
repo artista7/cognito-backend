@@ -1,0 +1,20 @@
+from django.contrib.auth import get_user_model
+from ..models import Subscription
+
+
+def studentInDriveSignalHandler(**kwargs):
+    if kwargs.get("created"):
+        pass
+        # instance = kwargs["instance"]
+        # User = get_user_model()
+        # students = User.objects.filter(student__id=instance.student.id)
+        # # Now add these users to college subscription group
+        # subscriptionId = "student_drive_{}".format(instance.drive.id)
+        # subscriptionStudentId = "student_studentInDrive_{}".format(instance.id)
+        # for user in students:
+        #     Subscription(user=user, subscriptionId=subscriptionId).save()
+        #     Subscription(
+        #         user=user, subscriptionId=subscriptionStudentId).save()
+
+    elif kwargs.get("update_fields"):
+        pass

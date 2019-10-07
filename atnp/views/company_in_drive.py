@@ -33,13 +33,13 @@ class CompanyInDriveViewSet(viewsets.ModelViewSet):
         otherParams = self.request.query_params
         queryfilters = {}
         # Create additional query filters
-        if otherParams.get("companyName"):
-            queryfilters["company__name__contains"] = otherParams["companyName"]
+        if otherParams.get("searchText"):
+            queryfilters["company__name__contains"] = otherParams["searchText"]
         if otherParams.get("status"):
             queryfilters["status__in"] = otherParams["status"]
         if otherParams.get("driveId"):
             queryfilters["drive_id"] = otherParams["driveId"]
-
+        print(otherParams)
         if student_id:
             drive_ids = [i.drive.id for i in StudentInDrive.objects.filter(
                 student_id=student_id)]
