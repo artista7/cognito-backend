@@ -214,7 +214,7 @@ class RoundSerializer(CustomModelSerializer):
             data["nextRound"] = hiredRound
             round = Round(**data)
             round.save()
-            lastRound.nextRound=round
+            lastRound.nextRound = round
             lastRound.save()
             return round
 
@@ -258,26 +258,24 @@ class JobOpeningSerializer(CustomModelSerializer):
         with atomic():
             jobOpening = super().create(validated_data)
             round2 = {
-                "jobOpeningId": jobOpening.id,
+                "jobOpening": jobOpening,
                 "name": "Hired",
-                "nextRoundId": None,
+                "nextRound": None,
                 "canEdit": False,
                 "canDelete": False,
                 "isInterview": False,
             }
-            round2 = RoundSerializer(data=round2, context=self.context)
-            round2.is_valid(raise_exception=True)
-            round2 = round2.save()
+            round2 = Round(**round2)
+            round2.save()
             round1 = {
-                "jobOpeningId": jobOpening.id,
+                "jobOpening": jobOpening,
                 "name": "Applications",
-                "nextRoundId": round2.id,
+                "nextRound": round2,
                 "canEdit": False,
                 "canDelete": False,
                 "isInterview": False,
             }
-            round1 = RoundSerializer(data=round1, context=self.context)
-            round1.is_valid(raise_exception=True)
+            round1 = Round(**round1)
             round1.save()
             return jobOpening
 
