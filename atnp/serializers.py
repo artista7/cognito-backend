@@ -427,7 +427,7 @@ class ApplicationSerializer(CustomModelSerializer):
             jobOpening__id=data["jobOpening"].id, name="Applications")[0]
         data["round"] = applicationRound
         application = Application.objects.create(**data)
-        temp = Application.objects.filter(companyInDrive__id=application.companyInDrive.id,
+        temp = Application.objects.filter(companyInDrive__id=application.jobOpening.companyInDrive.id,
                                           round__name="Application",
                                           nextApplicant=None)
         if temp:
