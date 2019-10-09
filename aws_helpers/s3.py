@@ -4,7 +4,7 @@ import tempfile
 import zipfile
 import uuid
 
-boto3.setup_default_session(profile_name='vivek-us-east-1')
+# boto3.setup_default_session(profile_name='vivek-us-east-1')
 s3 = boto3.resource('s3',  region_name='us-east-1')
 
 
