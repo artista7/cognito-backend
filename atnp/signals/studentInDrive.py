@@ -4,7 +4,8 @@ from ..models import Subscription
 
 def studentInDriveSignalHandler(**kwargs):
     if kwargs.get("created"):
-        pass
+        # When created send it in a Queue to send email to mentioned email address
+
         # instance = kwargs["instance"]
         # User = get_user_model()
         # students = User.objects.filter(student__id=instance.student.id)
@@ -17,4 +18,5 @@ def studentInDriveSignalHandler(**kwargs):
         #         user=user, subscriptionId=subscriptionStudentId).save()
 
     elif kwargs.get("update_fields"):
+        # When Update field changed is student the add subscription to drive and studentInDrive
         pass

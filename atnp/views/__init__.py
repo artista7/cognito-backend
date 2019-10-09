@@ -15,3 +15,4 @@ from .register_in_drive import register
 from .import_student_in_drive import import_students
 from .editApplicationOrder import edit_application_order
 from .student_applications import student_applications
+from .download_resumes import download_resumes

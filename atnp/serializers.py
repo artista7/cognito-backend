@@ -104,7 +104,7 @@ class ResumeOpeningSerializer(CustomModelSerializer):
     class Meta:
         model = ResumeOpening
         fields = ['id', 'title', 'status', 'resumeUrl', 'isEditable', 'resumeJson', 'versioningJson',
-                  'studentInDriveId', 'resumeId',
+                  'studentInDriveId', 'resumeId', 'proofs',
                   'createdAt', 'updatedAt']
         extra_kwargs = {
             "versioningJson": {"default": {}}
@@ -340,7 +340,7 @@ class StudentInDriveSerializer(CustomModelSerializer):
     class Meta:
         model = StudentInDrive
         fields = ['id', 'studentId', 'driveId', 'status',
-                  'drive', 'student',
+                  'drive', 'student', 'proofs',
                   'registrationCode', 'resumeOpenings',
                   'studentCollegeId', 'studentName',
                   'studentMail', 'studentPhone', 'createdAt', 'updatedAt']

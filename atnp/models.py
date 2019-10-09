@@ -307,7 +307,9 @@ class ResumeOpening(models.Model):
         db_column='resumeUrl', max_length=255, blank=True, null=True)
     # Field name made lowercase. This field type is a guess.
     resumeJson = JSONField(db_column='resumeJson', blank=True, null=True)
-    proofs = JSONField(blank=True, null=True)  # This field type is a guess.
+    # This field type is a guess.
+    proofs = ArrayField(JSONField(blank=True, null=True),
+                        default=list, blank=True, null=True)
     # Field name made lowercase. This field type is a guess.
     commentJson = JSONField(db_column='commentJson', blank=True, null=True)
     # Field name made lowercase. This field type is a guess.
@@ -457,7 +459,9 @@ class StudentInDrive(models.Model):
     # Field name made lowercase.
     student = models.ForeignKey(
         Student, models.DO_NOTHING, db_column='student', blank=True, null=True)
-    proofs = JSONField(blank=True, null=True)  # This field type is a guess.
+    # This field type is a guess.
+    proofs = ArrayField(JSONField(blank=True, null=True),
+                        default=list, blank=True, null=True)
 
     class Meta:
         db_table = 'studentindrive'
