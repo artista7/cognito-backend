@@ -25,11 +25,14 @@ class ApplicationViewSet(viewsets.ModelViewSet):
 
         otherParams = self.request.query_params
         queryfilters = {}
+
         # Create additional query filters
         if otherParams.get("companyId"):
             queryfilters["jobOpening__companyInDrive__company__id"] = otherParams["companyId"]
+        if otherParams.get("studentInDriveId"):
+            queryfilters["studentInDrive__id"] = otherParams["studentInDriveId"]
         if otherParams.get("studentId"):
-            queryfilters["studentInDrive__id"] = otherParams["studentId"]
+            queryfilters["studentInDrive__student__id"] = otherParams["studentId"]
         if otherParams.get("driveId"):
             queryfilters["studentInDrive__drive__id"] = otherParams["driveId"]
         if otherParams.get("jobOpeningId"):

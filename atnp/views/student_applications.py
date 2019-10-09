@@ -20,14 +20,22 @@ from atnp.serializers import CollegeSerializer, CompanySerializer, StudentSerial
 def student_applications(request):
     if request.method == 'GET':
         page = request.query_params.get('page', 1)
-        driveId = request.query_params.get('driveId')
-        studentInDriveId = request.query_params.get('studentInDriveId')
 
+        otherParams = request.query_params
         otherFilters = {}
-        if driveId:
-            otherFilters["drive__id"] = driveId
-        if studentInDriveId:
-            otherFilters["studentInDrive__id"] = studentInDriveId
+
+        # Create additional query filters
+        if otherParams.get("companyId"):
+            otherFilters["jobOpening__companyInDrive__company__id"] = otherParams["companyId"]
+        if otherParams.get("studentInDriveId"):
+            otherFilters["studentInDrive__id"] = otherParams["studentInDriveId"]
+        if otherParams.get("studentId"):
+            otherFilters["studentInDrive__student__id"] = otherParams["studentId"]
+        if otherParams.get("driveId"):
+            otherFilters["studentInDrive__drive__id"] = otherParams["driveId"]
+        if otherParams.get("jobOpeningId"):
+            otherFilters["jobOpening__id"] = otherParams["jobOpeningId"]
+
         user = request.user
         if user.student:
             # Get the student in drive object
@@ -36,7 +44,16 @@ def student_applications(request):
             paginator = Paginator(queryset, 10)
             return Response({"count": queryset.count(),
                              "results": StudentApplicationSerializer(paginator.page(page).object_list,
-                                                             many=True).data}
+                                                                     many=True).data}
                             )
-        return Response({"message": "Method only available for students users!"},
+        if user.college:
+                        # Get the student in drive object
+            queryset = Application.objects.filter(**otherFilters)
+            paginator = Paginator(queryset, 10)
+            return Response({"count": queryset.count(),
+                             "results": StudentApplicationSerializer(paginator.page(page).object_list,
+                                                                     many=True).data}
+                            )
+
+        return Response({"message": "Method only available for student or college users!"},
                         status=status.HTTP_400_BAD_REQUEST)
