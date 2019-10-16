@@ -30,7 +30,7 @@ def register(request):
                 return Response({"message": "Invalid Registration Code"},
                                 status=status.HTTP_400_BAD_REQUEST)
             studentInDrive.student = request.user.student
-            studentInDrive.save()
+            studentInDrive.save(update_fields=["student"])
             return Response({"message": "Registered Successfully!"})
     return Response({"message": "SignUp only supports post requests!"},
                     status=status.HTTP_405_METHOD_NOT_ALLOWED)

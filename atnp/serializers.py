@@ -38,12 +38,15 @@ class DriveSerializer(CustomModelSerializer):
             "status": {"required": True},
         }
 
+
     def create(self, validate_data):
         user = self.context['request'].user
         drive = Drive.objects.create(**validate_data, college=user.college)
         return drive
 
+
     def validate(self, data):
+        # Drive for the college should be created by the college user 
         # If user is college it can't update status field
         college_id = get_college_id(self.context['request'].user)
         if data.get("college") and data['college'].id != college_id:
@@ -104,7 +107,7 @@ class ResumeOpeningSerializer(CustomModelSerializer):
     class Meta:
         model = ResumeOpening
         fields = ['id', 'title', 'status', 'resumeUrl', 'isEditable', 'resumeJson', 'versioningJson',
-                  'studentInDriveId', 'resumeId', 'proofs',
+                  'studentInDriveId', 'resumeId', 'proofs', 'commentJson',
                   'createdAt', 'updatedAt']
         extra_kwargs = {
             "versioningJson": {"default": {}}
@@ -227,6 +230,7 @@ class JobOpeningSerializer(CustomModelSerializer):
                                                queryset=Job.objects.all())
     companyInDriveId = serializers.PrimaryKeyRelatedField(source='companyInDrive',
                                                           queryset=CompanyInDrive.objects.all())
+    
 
     class Meta:
         model = JobOpening

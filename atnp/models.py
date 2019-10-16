@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from model_utils import FieldTracker
 from django.contrib.postgres.fields import JSONField, ArrayField
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -39,10 +40,10 @@ class Application(models.Model):
         'ResumeOpening', models.DO_NOTHING, db_column='resumeOpening')
     # Field name made lowercase.
     round = models.ForeignKey(
-        'Round', models.DO_NOTHING, db_column='round', blank=True, null=True)
+        'Round', models.CASCADE, db_column='round', blank=True, null=True)
     # Field name made lowercase.
     jobOpening = models.ForeignKey(
-        'JobOpening', models.DO_NOTHING, db_column='jobOpening')
+        'JobOpening', models.CASCADE, db_column='jobOpening')
     # Field name made lowercase.
     nextApplicant = models.ForeignKey(
         'self', models.DO_NOTHING, db_column='nextApplicant', blank=True, null=True)
@@ -100,9 +101,11 @@ class CompanyInDrive(models.Model):
         Company, models.DO_NOTHING, db_column='company')
     status = models.CharField(max_length=255)
     # Field name made lowercase.
-    drive = models.ForeignKey('Drive', models.DO_NOTHING, db_column='drive')
+    drive = models.ForeignKey('Drive', models.CASCADE, db_column='drive')
     # Field name made lowercase. This field type is a guess.
     reviewedby = JSONField(db_column='reviewedBy', blank=True, null=True)
+    tracker = FieldTracker()
+    KYC = ArrayField(JSONField(), db_column='kyc', default=list, blank=True, null=True) 
 
     class Meta:
         db_table = 'companyindrive'
@@ -125,6 +128,9 @@ class Drive(models.Model):
     # Field name made lowercase.
     college = models.ForeignKey(
         College, models.DO_NOTHING, db_column='college', related_name='drives')
+    resources = ArrayField(JSONField(), db_column='resources', default=list,
+                           blank=True, null=True) 
+
 
     class Meta:
         db_table = 'drive'
@@ -218,7 +224,7 @@ class JobOpening(models.Model):
     # companyId = models.ForeignKey(Company, models.DO_NOTHING, db_column='companyId')  # Field name made lowercase.
     # Field name made lowercase.
     companyInDrive = models.ForeignKey(
-        CompanyInDrive, models.DO_NOTHING, db_column='companyInDrive', related_name='jobOpenings')
+        CompanyInDrive, models.CASCADE, db_column='companyInDrive', related_name='jobOpenings')
     # Field name made lowercase.
     job = models.ForeignKey(Job, models.DO_NOTHING, db_column='job')
 
@@ -311,7 +317,8 @@ class ResumeOpening(models.Model):
     proofs = ArrayField(JSONField(blank=True, null=True),
                         default=list, blank=True, null=True)
     # Field name made lowercase. This field type is a guess.
-    commentJson = JSONField(db_column='commentJson', blank=True, null=True)
+    commentJson = ArrayField(JSONField(blank=True, null=True),
+                             default=list, blank=True, null=True)
     # Field name made lowercase. This field type is a guess.
     versioningJson = JSONField(
         db_column='versioningJson', blank=True, null=True)
@@ -326,7 +333,7 @@ class ResumeOpening(models.Model):
     resume = models.ForeignKey(Resume, models.DO_NOTHING, db_column='resume')
     # Field name made lowercase.
     studentInDrive = models.ForeignKey(
-        'StudentInDrive', models.DO_NOTHING, db_column='studentInDrive', related_name="resumeOpenings")
+        'StudentInDrive', models.CASCADE, db_column='studentInDrive', related_name="resumeOpenings")
 
     class Meta:
         db_table = 'resumeopening'
@@ -378,7 +385,7 @@ class Round(models.Model):
     deadline = models.DateTimeField(blank=True, null=True)
     # Field name made lowercase.
     jobOpening = models.ForeignKey(
-        JobOpening, models.DO_NOTHING, db_column='jobOpening', related_name="rounds")
+        JobOpening, models.CASCADE, db_column='jobOpening', related_name="rounds")
     # Field name made lowercase.
     createdAt = models.DateTimeField(db_column='createdAt', auto_now_add=True)
     # Field name made lowercase.
@@ -431,7 +438,6 @@ class Student(models.Model):
 
 class StudentInDrive(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # Field name made lowercase.
     registrationCode = models.CharField(
         db_column='registrationCode', max_length=255, blank=True, null=True)
     status = models.CharField(max_length=255, blank=True, null=True)
@@ -455,7 +461,7 @@ class StudentInDrive(models.Model):
     studentMetadata = JSONField(
         db_column='studentMetadata', blank=True, null=True)
     # Field name made lowercase.
-    drive = models.ForeignKey(Drive, models.DO_NOTHING, db_column='drive')
+    drive = models.ForeignKey(Drive, models.CASCADE, db_column='drive')
     # Field name made lowercase.
     student = models.ForeignKey(
         Student, models.DO_NOTHING, db_column='student', blank=True, null=True)
@@ -466,6 +472,19 @@ class StudentInDrive(models.Model):
     class Meta:
         db_table = 'studentindrive'
 
+
+class ContactUs(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    email = models.EmailField(
+        db_column='email', max_length=255)
+    message = models.EmailField(
+        db_column='message', max_length=2000)
+    category = models.EmailField(
+        db_column='category', max_length=255)
+    createdAt = models.DateTimeField(db_column='createdAt', auto_now_add=True)
+
+    class Meta:
+        db_table = 'contactus'
 
 # class Subscription(models.Model):
 #     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

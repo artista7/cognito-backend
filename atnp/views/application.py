@@ -47,17 +47,14 @@ class ApplicationViewSet(viewsets.ModelViewSet):
                 # Filterout all the applications student student
                 queryset = queryset.filter(
                     studentInDrive__student_id=student_id, **queryfilters)
-                # TODO:  Support additional queries
             elif company_id:
                 # Filterout all the applications for the company
                 queryset = queryset.filter(
                     jobOpening__companyInDrive__company_id=company_id, **queryfilters)
-                # TODO:  Support additional queries
             elif college_id:
                 # Filterout all the applications for the college
                 queryset = queryset.filter(
                     jobOpening__companyInDrive__drive__college_id=college_id, **queryfilters)
-                # TODO:  Support additional queries
             else:
                 queryset = []
 

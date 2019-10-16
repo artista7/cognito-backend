@@ -29,6 +29,8 @@ class StudentInDriveViewSet(viewsets.ModelViewSet):
             queryfilters["student__name__contains"] = otherParams["searchText"]
         if otherParams.get("status"):
             queryfilters["status__in"] = otherParams["status"]
+        if otherParams.get("driveId"):
+            queryfilters["drive__id"] = otherParams["driveId"]
 
         if username:
             # First get the student_id, company_id, college_id
