@@ -1,7 +1,7 @@
 import boto3
 
 # boto3.setup_default_session(profile_name='vivek-us-east-1')
-client = boto3.client('ses')
+client = boto3.client('ses',  region_name='us-east-1')
 SOURCE_EMAIL = "notifications@learning-sage.com"
 
 
