@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from ..models import Subscription
+from ..models import Subscription, Feed
 
 
 def driveSignalHandler(**kwargs):

@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'generic_relations',
     'atnp',
     'users',
+    'todo',
     'notification',
     'core'
 ]

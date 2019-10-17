@@ -105,7 +105,8 @@ class CompanyInDrive(models.Model):
     # Field name made lowercase. This field type is a guess.
     reviewedby = JSONField(db_column='reviewedBy', blank=True, null=True)
     tracker = FieldTracker()
-    KYC = ArrayField(JSONField(), db_column='kyc', default=list, blank=True, null=True) 
+    KYC = ArrayField(JSONField(), db_column='kyc',
+                     default=list, blank=True, null=True)
 
     class Meta:
         db_table = 'companyindrive'
@@ -129,8 +130,7 @@ class Drive(models.Model):
     college = models.ForeignKey(
         College, models.DO_NOTHING, db_column='college', related_name='drives')
     resources = ArrayField(JSONField(), db_column='resources', default=list,
-                           blank=True, null=True) 
-
+                           blank=True, null=True)
 
     class Meta:
         db_table = 'drive'
@@ -227,6 +227,7 @@ class JobOpening(models.Model):
         CompanyInDrive, models.CASCADE, db_column='companyInDrive', related_name='jobOpenings')
     # Field name made lowercase.
     job = models.ForeignKey(Job, models.DO_NOTHING, db_column='job')
+    tracker = FieldTracker()
 
     class Meta:
         db_table = 'jobopening'
@@ -477,14 +478,15 @@ class ContactUs(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(
         db_column='email', max_length=255)
-    message = models.EmailField(
+    message = models.CharField(
         db_column='message', max_length=2000)
-    category = models.EmailField(
+    category = models.CharField(
         db_column='category', max_length=255)
     createdAt = models.DateTimeField(db_column='createdAt', auto_now_add=True)
 
     class Meta:
         db_table = 'contactus'
+
 
 # class Subscription(models.Model):
 #     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

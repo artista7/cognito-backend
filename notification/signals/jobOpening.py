@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from ..models import Subscription
+from ..models import Subscription, Feed
 from ..message_templates import JOB_OPENING_IN_DRIVE_APPROVED, JOB_OPENING_IN_DRIVE_APPROVED_STUDENT, JOB_OPENING_IN_DRIVE_REQUEST
 
 
@@ -10,9 +10,9 @@ def jobOpeningSignalHandler(**kwargs):
 
         # Get all drive user subscriptions
         users = Subscription.objects.filter(
-            sourceId=instance.drive.id, type="college_drive")
+            sourceId=instance.companyInDrive.drive.id, type="college_drive")
 
-        driveName = instance.drive.name
+        driveName = instance.companyInDrive.drive.name
         companyName = instance.companyInDrive.company.name
         message = {
             "feed_message": JOB_OPENING_IN_DRIVE_REQUEST["feed_message"].format(companyName, driveName)
@@ -22,13 +22,14 @@ def jobOpeningSignalHandler(**kwargs):
                  messageCategory="New Job Opening").save()
 
     elif not kwargs.get("created"):
+        print("here1")
         if "status" in kwargs.get("update_fields"):
             instance = kwargs["instance"]
             status = instance.tracker.previous('status')
-            if instance.status == "active" and status == "pendingApproval":
+            if instance.status == "verified" and status == "pendingApproval":
                 User = get_user_model()
                 company_users = User.objects.filter(
-                    company__id=instance.company.id)
+                    company__id=instance.companyInDrive.company.id)
                 # Now add these users to college subscription group
                 type = "company_jobOpening"
                 sourceId = instance.id
@@ -38,8 +39,8 @@ def jobOpeningSignalHandler(**kwargs):
                         type=type).save()
 
                 # Save approval in the feed of company users
-                driveName = instance.drive.name
-                collegeName = instance.drive.college.name
+                driveName = instance.companyInDrive.drive.name
+                collegeName = instance.companyInDrive.drive.college.name
                 message = {
                     "feed_message": JOB_OPENING_IN_DRIVE_APPROVED["feed_message"].format(driveName, collegeName)
                 }
@@ -48,15 +49,16 @@ def jobOpeningSignalHandler(**kwargs):
                          messageCategory="Job Opening Approved").save()
 
                 # Send message to all students
-                name = instance.name
                 role = instance.role
                 companyName = instance.companyInDrive.company.name
                 message = {
-                    "feed_message": JOB_OPENING_IN_DRIVE_APPROVED_STUDENT["feed_message"].format(companyName, name)
+                    "feed_message": JOB_OPENING_IN_DRIVE_APPROVED_STUDENT["feed_message"].format(companyName, role)
                 }
-                # Get all drive user subscriptions
+                # Get all drive student subscriptions
+                print(instance.companyInDrive.drive.id)
                 students = Subscription.objects.filter(
-                    sourceId=instance.drive.id, type="student_drive")
+                    sourceId=instance.companyInDrive.drive.id, type="student_drive")
                 for user in students:
+                    print(user)
                     Feed(userId=user.targetId, message=message,
                          messageCategory="New Job Opening").save()
