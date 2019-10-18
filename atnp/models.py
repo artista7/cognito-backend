@@ -441,7 +441,8 @@ class StudentInDrive(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     registrationCode = models.CharField(
         db_column='registrationCode', max_length=255, blank=True, null=True)
-    status = models.CharField(max_length=255, blank=True, null=True)
+    status = models.CharField(
+        max_length=255, default="active", blank=True, null=True)
     # Field name made lowercase.
     studentCollegeId = models.CharField(
         db_column='studentCollegeId', max_length=255, blank=True, null=True)

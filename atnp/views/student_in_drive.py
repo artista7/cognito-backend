@@ -23,15 +23,18 @@ class StudentInDriveViewSet(viewsets.ModelViewSet):
         queryset = StudentInDrive.objects.all()
         username = self.request.user
         otherParams = self.request.query_params
+        print(otherParams)
         queryfilters = {}
         # Create additional query filters
         if otherParams.get("searchText"):
             queryfilters["student__name__contains"] = otherParams["searchText"]
         if otherParams.get("status"):
-            queryfilters["status__in"] = otherParams["status"]
+            queryfilters["status__in"] = [otherParams["status"]] if type(
+                otherParams["status"]) != list else otherParams["status"]
         if otherParams.get("driveId"):
             queryfilters["drive__id"] = otherParams["driveId"]
 
+        print(queryfilters)
         if username:
             # First get the student_id, company_id, college_id
             student_id = get_student_id(username)

@@ -36,7 +36,8 @@ class CompanyInDriveViewSet(viewsets.ModelViewSet):
         if otherParams.get("searchText"):
             queryfilters["company__name__contains"] = otherParams["searchText"]
         if otherParams.get("status"):
-            queryfilters["status__in"] = otherParams["status"]
+            queryfilters["status__in"] = [otherParams["status"]] if type(
+                otherParams["status"]) != list else otherParams["status"]
         if otherParams.get("driveId"):
             queryfilters["drive__id"] = otherParams["driveId"]
 
