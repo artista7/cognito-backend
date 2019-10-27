@@ -29,7 +29,7 @@ class DriveSerializer(CustomModelSerializer):
 
     class Meta:
         model = Drive
-        fields = ['id', 'name', 'status', 'type', 'collegeId', 'college',
+        fields = ['id', 'name', 'status', 'type', 'collegeId', 'college', 'resources',
                   'startDate', 'endDate', 'createdAt', 'updatedAt']
 
         extra_kwargs = {
