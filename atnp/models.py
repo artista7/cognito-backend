@@ -479,6 +479,8 @@ class ContactUs(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(
         db_column='email', max_length=255)
+    name = models.CharField(
+        db_column='name', max_length=2000)
     message = models.CharField(
         db_column='message', max_length=2000)
     category = models.CharField(

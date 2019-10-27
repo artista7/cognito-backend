@@ -311,7 +311,7 @@ class CompanyInDriveSerializer(CustomModelSerializer):
 
     class Meta:
         model = CompanyInDrive
-        fields = ['id', 'createdAt', 'updatedAt', 'jobOpenings', 'companyId', 'driveId', 'drive', 'company',
+        fields = ['id', 'createdAt', 'updatedAt', 'jobOpenings', 'companyId', 'driveId', 'drive', 'company', 'KYC',
                   'status']
 
     def validate(self, data):
