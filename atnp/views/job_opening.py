@@ -41,7 +41,7 @@ class JobOpeningViewSet(viewsets.ModelViewSet):
                 student_id=student_id)]
             # Filterout all the applications student student
             queryset = queryset.filter(
-                companyInDrive__drive_id__in=drive_ids, **queryfilters)
+                companyInDrive__drive_id__in=drive_ids, status="verified", **queryfilters)
         elif company_id:
             # Filterout all the applications for the company
             queryset = queryset.filter(

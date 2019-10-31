@@ -107,7 +107,7 @@ class ResumeOpeningSerializer(CustomModelSerializer):
     class Meta:
         model = ResumeOpening
         fields = ['id', 'title', 'status', 'resumeUrl', 'isEditable', 'resumeJson', 'versioningJson',
-                  'studentInDriveId', 'resumeId', 'proofs', 'commentJson',
+                  'studentInDriveId', 'resumeId', 'proofs', 'commentJson', 'reviewedBy',
                   'createdAt', 'updatedAt']
         extra_kwargs = {
             "versioningJson": {"default": {}}
@@ -311,23 +311,11 @@ class CompanyInDriveSerializer(CustomModelSerializer):
 
     class Meta:
         model = CompanyInDrive
-        fields = ['id', 'createdAt', 'updatedAt', 'jobOpenings', 'companyId', 'driveId', 'drive', 'company', 'KYC',
+        fields = ['id', 'createdAt', 'updatedAt', 'jobOpenings', 
+                  'companyId', 'driveId', 'drive', 'company', 'KYC',
                   'status']
 
     def validate(self, data):
-        # If user is college it can't update status field
-        # request = self.context['request']
-        # view = self.context['view']
-        # college_id = get_college_id(request.user)
-        # company_id = get_company_id(request.user)
-
-        # if view.action == 'create' and not company_id:
-        #     raise serializers.ValidationError(
-        #         'Only a user associated with a company can create a record')
-
-        # if view.action == 'create' and data['company'].id != company_id:
-        #     raise serializers.ValidationError('You can only create a record with\
-        #                         company_id which you are associated with')
         return data
 
 

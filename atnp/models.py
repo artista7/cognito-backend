@@ -313,7 +313,8 @@ class ResumeOpening(models.Model):
     resumeUrl = models.CharField(
         db_column='resumeUrl', max_length=255, blank=True, null=True)
     # Field name made lowercase. This field type is a guess.
-    resumeJson = JSONField(db_column='resumeJson', blank=True, null=True)
+    resumeJson = JSONField(db_column='resumeJson', blank=True, null=True, default=dict)
+    reviewedBy = JSONField(db_column='reviewedBy', blank=True, null=True, default=dict)
     # This field type is a guess.
     proofs = ArrayField(JSONField(blank=True, null=True),
                         default=list, blank=True, null=True)
