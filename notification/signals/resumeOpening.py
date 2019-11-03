@@ -11,35 +11,38 @@ def resumeOpeningSignalHandler(**kwargs):
         # Nothing to do here, batch notifications will be send to college
         pass
     elif not kwargs.get("created"):
-        userId = Subscription.objects.filter(sourceId=instance.studentInDrive.id,
-                                             type="student_studentInDrive")[0].targetId
+        try:
+            userId = Subscription.objects.filter(sourceId=instance.studentInDrive.id,
+                                                type="student_studentInDrive")[0].targetId
 
-        if "status" in kwargs.get("update_fields"):
-            instance = kwargs["instance"]
-            # status = instance.tracker.previous('status')
-            if instance.status == "underReview":
+            if "status" in kwargs.get("update_fields"):
+                instance = kwargs["instance"]
+                # status = instance.tracker.previous('status')
+                if instance.status == "underReview":
+                    resumeTitle = instance.title
+                    driveName = instance.studentInDrive.drive.name
+                    message = {
+                        "feed_message": RESUME_OPENING_PENDING_REVIEW["feed_message"].format(resumeTitle, driveName)
+                    }
+                    Feed(userId=userId, message=message,
+                        messageCategory="Resume Opening").save()
+                elif instance.status == "verified":
+                    resumeTitle = instance.title
+                    driveName = instance.studentInDrive.drive.name
+                    message = {
+                        "feed_message": RESUME_OPENING_APPROVED["feed_message"].format(resumeTitle, driveName)
+                    }
+                    Feed(userId=userId, message=message,
+                        messageCategory="Resume Opening").save()
+            if "commentJson" in kwargs.get("update_fields"):
                 resumeTitle = instance.title
                 driveName = instance.studentInDrive.drive.name
                 message = {
-                    "feed_message": RESUME_OPENING_PENDING_REVIEW["feed_message"].format(resumeTitle, driveName)
+                    "feed_message": RESUME_OPENING_APPROVED["feed_message"].format(driveName, collegeName)
                 }
                 Feed(userId=userId, message=message,
-                     messageCategory="Resume Opening").save()
-            elif instance.status == "verified":
-                resumeTitle = instance.title
-                driveName = instance.studentInDrive.drive.name
-                message = {
-                    "feed_message": RESUME_OPENING_APPROVED["feed_message"].format(resumeTitle, driveName)
-                }
-                Feed(userId=userId, message=message,
-                     messageCategory="Resume Opening").save()
-        if "commentJson" in kwargs.get("update_fields"):
-            resumeTitle = instance.title
-            driveName = instance.studentInDrive.drive.name
-            message = {
-                "feed_message": RESUME_OPENING_APPROVED["feed_message"].format(driveName, collegeName)
-            }
-            Feed(userId=userId, message=message,
-                 messageCategory="Resume Opening").save()
-        if "versioningJson" in kwargs.get("update_fields"):
-            pass
+                    messageCategory="Resume Opening").save()
+            if "versioningJson" in kwargs.get("update_fields"):
+                pass
+        except Exception as e : 
+            print(e)

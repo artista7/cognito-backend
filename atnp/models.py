@@ -30,7 +30,7 @@ class Application(models.Model):
     # Field name made lowercase. This field type is a guess.
     previousRounds = JSONField(
         db_column='previousRounds', blank=True, null=True)
-    status = models.CharField(max_length=255)
+    status = models.CharField(max_length=255, default="active")
     # Field name made lowercase.
     createdAt = models.DateTimeField(db_column='createdAt', auto_now_add=True)
     # Field name made lowercase.

@@ -21,7 +21,17 @@ class DriveViewSet(viewsets.ModelViewSet):
         """
         queryset = Drive.objects.all()
         username = self.request.user.username
-        print("self.request.user", self.request.user)
+        otherParams = self.request.query_params
+        queryfilters = {}
+        # Create additional query filters
+        if otherParams.get("searchText"):
+            queryfilters["college__name__contains"] = otherParams["searchText"]
+        if otherParams.get("type"):
+            queryfilters["type__in"] = [otherParams["type"]] if type(
+                otherParams["type"]) != list else otherParams["type"]
+        if otherParams.get("driveId"):
+            queryfilters["id"] = otherParams["driveId"]
+
         if username:
             college_id = get_college_id(username)
             company_id = get_company_id(username)
@@ -29,7 +39,8 @@ class DriveViewSet(viewsets.ModelViewSet):
                 # Filterout all the applications for the college
                 queryset = queryset.filter(college_id=college_id)
             elif company_id:
-                queryset = queryset
+                queryset = queryset.filter(**queryfilters)
+
             else:
                 queryset = []
 
