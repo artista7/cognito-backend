@@ -261,13 +261,23 @@ class JobOpeningSerializer(CustomModelSerializer):
     def create(self, validated_data):
         with atomic():
             jobOpening = super().create(validated_data)
-            round2 = {
+            round3 = {
                 "jobOpening": jobOpening,
                 "name": "Hired",
                 "nextRound": None,
                 "canEdit": False,
                 "canDelete": False,
                 "isInterview": False,
+            }
+            round3 = Round(**round3)
+            round3.save()
+            round2 = {
+                "jobOpening": jobOpening,
+                "name": "Interviews",
+                "nextRound": round3,
+                "canEdit": False,
+                "canDelete": False,
+                "isInterview": True,
             }
             round2 = Round(**round2)
             round2.save()
