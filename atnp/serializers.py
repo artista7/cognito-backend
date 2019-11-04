@@ -29,7 +29,7 @@ class DriveSerializer(CustomModelSerializer):
 
     class Meta:
         model = Drive
-        fields = ['id', 'name', 'status', 'type', 'collegeId', 'college',
+        fields = ['id', 'name', 'status', 'type', 'collegeId', 'college', 'resources',
                   'startDate', 'endDate', 'createdAt', 'updatedAt']
 
         extra_kwargs = {
@@ -38,12 +38,15 @@ class DriveSerializer(CustomModelSerializer):
             "status": {"required": True},
         }
 
+
     def create(self, validate_data):
         user = self.context['request'].user
         drive = Drive.objects.create(**validate_data, college=user.college)
         return drive
 
+
     def validate(self, data):
+        # Drive for the college should be created by the college user 
         # If user is college it can't update status field
         college_id = get_college_id(self.context['request'].user)
         if data.get("college") and data['college'].id != college_id:
@@ -104,7 +107,7 @@ class ResumeOpeningSerializer(CustomModelSerializer):
     class Meta:
         model = ResumeOpening
         fields = ['id', 'title', 'status', 'resumeUrl', 'isEditable', 'resumeJson', 'versioningJson',
-                  'studentInDriveId', 'resumeId', 'proofs',
+                  'studentInDriveId', 'resumeId', 'proofs', 'commentJson', 'reviewedBy',
                   'createdAt', 'updatedAt']
         extra_kwargs = {
             "versioningJson": {"default": {}}
@@ -227,6 +230,7 @@ class JobOpeningSerializer(CustomModelSerializer):
                                                queryset=Job.objects.all())
     companyInDriveId = serializers.PrimaryKeyRelatedField(source='companyInDrive',
                                                           queryset=CompanyInDrive.objects.all())
+    
 
     class Meta:
         model = JobOpening
@@ -257,13 +261,23 @@ class JobOpeningSerializer(CustomModelSerializer):
     def create(self, validated_data):
         with atomic():
             jobOpening = super().create(validated_data)
-            round2 = {
+            round3 = {
                 "jobOpening": jobOpening,
                 "name": "Hired",
                 "nextRound": None,
                 "canEdit": False,
                 "canDelete": False,
                 "isInterview": False,
+            }
+            round3 = Round(**round3)
+            round3.save()
+            round2 = {
+                "jobOpening": jobOpening,
+                "name": "Interviews",
+                "nextRound": round3,
+                "canEdit": False,
+                "canDelete": False,
+                "isInterview": True,
             }
             round2 = Round(**round2)
             round2.save()
@@ -307,23 +321,11 @@ class CompanyInDriveSerializer(CustomModelSerializer):
 
     class Meta:
         model = CompanyInDrive
-        fields = ['id', 'createdAt', 'updatedAt', 'jobOpenings', 'companyId', 'driveId', 'drive', 'company',
+        fields = ['id', 'createdAt', 'updatedAt', 'jobOpenings', 
+                  'companyId', 'driveId', 'drive', 'company', 'KYC',
                   'status']
 
     def validate(self, data):
-        # If user is college it can't update status field
-        # request = self.context['request']
-        # view = self.context['view']
-        # college_id = get_college_id(request.user)
-        # company_id = get_company_id(request.user)
-
-        # if view.action == 'create' and not company_id:
-        #     raise serializers.ValidationError(
-        #         'Only a user associated with a company can create a record')
-
-        # if view.action == 'create' and data['company'].id != company_id:
-        #     raise serializers.ValidationError('You can only create a record with\
-        #                         company_id which you are associated with')
         return data
 
 

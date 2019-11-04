@@ -68,6 +68,8 @@ INSTALLED_APPS = [
     'generic_relations',
     'atnp',
     'users',
+    'todo',
+    'notification',
     'core'
 ]
 CSRF_TRUSTED_ORIGINS = ['localhost:3000', '*.learning-sage.com']
@@ -150,7 +152,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',),
     'EXCEPTION_HANDLER': 'core.exceptions.core_exception_handler',
     'NON_FIELD_ERRORS_KEY': 'error',
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
 }
 
 JWT_AUTH = {

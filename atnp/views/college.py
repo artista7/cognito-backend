@@ -1,6 +1,5 @@
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import viewsets
-
 from atnp.models import College
 from atnp.serializers import CollegeSerializer
 from atnp.utils import get_student_id, get_company_id, get_college_id

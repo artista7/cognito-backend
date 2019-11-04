@@ -24,19 +24,32 @@ class JobOpeningViewSet(viewsets.ModelViewSet):
         student_id = get_student_id(username)
         company_id = get_company_id(username)
         college_id = get_college_id(username)
+
+        otherParams = self.request.query_params
+        queryfilters = {}
+        if otherParams.get("searchText"):
+            queryfilters["company__name__contains"] = otherParams["searchText"]
+        if otherParams.get("status"):
+            queryfilters["status__in"] = otherParams["status"]
+        if otherParams.get("driveId"):
+            queryfilters["companyInDrive__drive__id"] = otherParams["driveId"]
+        if otherParams.get("companyInDriveId"):
+            queryfilters["companyInDrive_id"] = otherParams["companyInDriveId"]
         if student_id:
             # Get all the drives student is registered in
             drive_ids = [i.drive.id for i in StudentInDrive.objects.filter(
                 student_id=student_id)]
             # Filterout all the applications student student
-            queryset = queryset.filter(companyInDrive__drive_id__in=drive_ids)
+            queryset = queryset.filter(
+                companyInDrive__drive_id__in=drive_ids, status="verified", **queryfilters)
         elif company_id:
             # Filterout all the applications for the company
-            queryset = queryset.filter(companyInDrive__company_id=company_id)
+            queryset = queryset.filter(
+                companyInDrive__company__id=company_id, **queryfilters)
         elif college_id:
             # Filterout all the applications for the college
             queryset = queryset.filter(
-                companyInDrive__drive__college_id=college_id)
+                companyInDrive__drive__college__id=college_id, **queryfilters)
         else:
             queryset = []
         return queryset

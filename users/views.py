@@ -45,8 +45,8 @@ def signup(request):
             college = data.pop("college")
             user = CustomUserSerializer(data=data)
             if not user.is_valid():
-                Response({"message": "BAD REQUEST"},
-                         status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "BAD REQUEST", "errors": college.errors},
+                                status=status.HTTP_400_BAD_REQUEST)
             # Check if college data is valid
             user_object = user.save()
             request.user = user_object
@@ -54,15 +54,15 @@ def signup(request):
                 data=college, context={"request": request})
             if not college.is_valid():
                 user_object.delete()
-                return Response({"message": "BAD REQUEST"},
+                return Response({"message": "BAD REQUEST", "errors": student.errors},
                                 status=status.HTTP_400_BAD_REQUEST)
             college.save()
         elif "company" in data:
             company = data.pop("company")
             user = CustomUserSerializer(data=data)
             if not user.is_valid():
-                Response({"message": "BAD REQUEST"},
-                         status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "BAD REQUEST", "errors": user.errors},
+                                status=status.HTTP_400_BAD_REQUEST)
             # Check if college data is valid
             user_object = user.save()
             request.user = user_object
@@ -70,15 +70,16 @@ def signup(request):
                 data=company, context={"request": request})
             if not company.is_valid():
                 user_object.delete()
-                return Response({"message": "BAD REQUEST"},
+                return Response({"message": "BAD REQUEST", "errors": company.errors},
                                 status=status.HTTP_400_BAD_REQUEST)
             company.save()
         elif "student" in data:
             student = data.pop("student")
             user = CustomUserSerializer(data=data)
+
             if not user.is_valid():
-                Response({"message": "BAD REQUEST"},
-                         status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "BAD REQUEST", "errors": user.errors},
+                                status=status.HTTP_400_BAD_REQUEST)
             # Check if college data is valid
             user_object = user.save()
             request.user = user_object
@@ -86,7 +87,7 @@ def signup(request):
                 data=student, context={"request": request})
             if not student.is_valid():
                 user_object.delete()
-                return Response({"message": "BAD REQUEST"},
+                return Response({"message": "BAD REQUEST", "errors": student.errors},
                                 status=status.HTTP_400_BAD_REQUEST)
             student.save()
         else:

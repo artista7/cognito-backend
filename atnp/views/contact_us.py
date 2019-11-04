@@ -15,7 +15,7 @@ from ..models import ContactUs
 @api_view(['POST', ])
 @permission_classes((AllowAny, ))
 @atomic
-def student_applications(request):
+def contact_us(request):
     data = request.data
     ContactUs(**data).save()
     return Response({"message": "Saved"},

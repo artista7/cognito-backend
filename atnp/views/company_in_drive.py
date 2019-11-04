@@ -36,24 +36,23 @@ class CompanyInDriveViewSet(viewsets.ModelViewSet):
         if otherParams.get("searchText"):
             queryfilters["company__name__contains"] = otherParams["searchText"]
         if otherParams.get("status"):
-            queryfilters["status__in"] = otherParams["status"]
+            queryfilters["status__in"] = [otherParams["status"]] if type(
+                otherParams["status"]) != list else otherParams["status"]
         if otherParams.get("driveId"):
-            queryfilters["drive_id"] = otherParams["driveId"]
-        print(otherParams)
+            queryfilters["drive__id"] = otherParams["driveId"]
+
         if student_id:
             drive_ids = [i.drive.id for i in StudentInDrive.objects.filter(
                 student_id=student_id)]
-            # Filterout all the applications student student
+            # Only approved companies
+            queryfilters["status"] = 'active'
             queryset = queryset.filter(
                 drive_id__in=drive_ids, **queryfilters)
         elif company_id:
-            # Filterout all the applications for the company
-            queryset = queryset.filter(company_id=company_id)
+            queryset = queryset.filter(company_id=company_id, **queryfilters)
         elif college_id:
-            # Filterout all the applications for the college
             queryset = queryset.filter(
                 drive__college_id=college_id, **queryfilters)
-            # TODO:  Support additional queries
         else:
             queryset = []
         return queryset

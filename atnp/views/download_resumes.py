@@ -29,7 +29,6 @@ def download_resumes(request):
                     resumeUrls.append({"resumeUrl": application.resumeOpening.resumeUrl,
                                        "studentName": application.studentInDrive.studentName,
                                        "studentCollegeId": application.studentInDrive.studentCollegeId})
-            print(resumeUrls)
             url = download_and_upload(resumeUrls)
             return Response({"message": "Application Update", "url": url})
         else:
