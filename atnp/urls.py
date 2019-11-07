@@ -25,6 +25,7 @@ from .views import (
     student_applications,
     download_resumes,
     contact_us,
+    dashboard_data
 )
 
 app_name = "atnp"
@@ -55,4 +56,6 @@ urlpatterns = [
     url("^student_applications/", student_applications),
     url("^download_resumes/", download_resumes),
     url("^contact_us/", contact_us),
+    url("^dashboard/", dashboard_data),
+
 ]
