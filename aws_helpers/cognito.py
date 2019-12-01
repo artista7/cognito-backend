@@ -2,7 +2,7 @@ import os
 import boto3
 import random
 import string
-boto3.setup_default_session(profile_name='vivek-us-east-1')
+# boto3.setup_default_session(profile_name='vivek-us-east-1')
 client = boto3.client('cognito-idp',  region_name='us-east-1')
 
 COGNITO_USER_POOL = os.environ["COGNITO_USER_POOL"]
