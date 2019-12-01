@@ -7,6 +7,7 @@ from rest_framework_jwt.settings import api_settings
 from rest_framework_jwt.views import JSONWebTokenAPIView
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
+from rest_framework_jwt.compat import get_username_field, PasswordField
 
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
@@ -23,12 +24,14 @@ class CustomJsonWebTokenSerializer(JSONWebTokenSerializer):
         Dynamically add the USERNAME_FIELD to self.fields.
         """
         super(CustomJsonWebTokenSerializer, self).__init__(*args, **kwargs)
+        print(self.fields)
+        self.fields = {} 
 
     def validate(self, attrs):
         credentials = {
-            self.username_field: attrs.get(self.username_field),
+            # self.username_field: attrs.get(self.username_field),
             'cognito_token': self.context.get('request', {}).data['cognito_token'],
-            'password': 'password1234'
+            # 'password': 'password1234'
         }
         if all(credentials.values()):
             validator = self.get_token_validator()
