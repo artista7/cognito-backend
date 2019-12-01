@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from atnp.models import Resume
 from atnp.serializers import ResumeSerializer
 from atnp.utils import get_student_id, get_company_id, get_college_id
+from atnp.permissions import CompanyPermissions
 
 
 class ResumeViewSet(viewsets.ModelViewSet):
@@ -16,6 +17,11 @@ class ResumeViewSet(viewsets.ModelViewSet):
 
     queryset = Resume.objects.all().order_by('-name')
     serializer_class = ResumeSerializer
+
+    def __init__(self, **kwargs):
+        # Required to identify in permission module 
+        super().__init__(**kwargs)
+        self.name = "resume"
 
     def get_queryset(self):
         """

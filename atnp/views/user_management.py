@@ -41,32 +41,37 @@ def org_users(request):
     elif request.method == 'POST':
         # Create new user in cognito
         data = request.data
+        print(data)
         user = request.user
+        orgType = data.pop("organizationType")
         if user.college:
             # Check if user is valid
             data["college"] = user.college
+            data["username"] = "college_" + data["email"]
             new_user = CustomUserSerializer(data=data)
             new_user.is_valid(raise_exception=True)
             # Create a new user in cognito
             try:
                 create_new_user(data["email"], data["name"],
-                                data["phoneNumber"], "college", data["college"].id)
+                                data.get("phoneNumber"), "college", data["college"].id)
                 new_user_instance = new_user.create(validated_data=data)
                 new_user.college = data["college"]
-                new_user.save()
-                return Response(CustomUserSerializer(new_user).data)
+                return Response(new_user.data)
             except Exception as e:
+                import traceback 
+                print(traceback.print_exc())
                 return Response({"error": str(e)})
         elif user.company:
             data["company"] = user.company
+            data["username"] = "company_" + data["email"]
+            orgType = data.pop("organizationType")
             new_user = CustomUserSerializer(data=data)
             new_user.is_valid(raise_exception=True)
             try:
                 create_new_user(data["email"], data["name"],
-                                data["phoneNumber"], "company", data["company"].id)
+                                data.get("phoneNumber"), "company", data["company"].id)
                 new_user = new_user.create(validated_data=data)
                 new_user.company = data["company"]
-                new_user.save()
                 return Response(CustomUserSerializer(new_user).data)
             except Exception as e:
                 return Response({"error": str(e)})

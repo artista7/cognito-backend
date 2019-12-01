@@ -4,16 +4,25 @@ from rest_framework import viewsets
 from atnp.models import Drive
 from atnp.serializers import DriveSerializer
 from atnp.utils import get_college_id, get_company_id
+from atnp.permissions import CompanyPermissions
 
 
 class DriveViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    permission_classes = (IsAuthenticated,)
+    name = 'drive'
+    # permission_classes = (IsAuthenticated, CompanyPermissions)
+    permission_classes = (IsAuthenticated, )
+
 
     queryset = Drive.objects.all().order_by('-name')
     serializer_class = DriveSerializer
+
+    def __init__(self, **kwargs):
+        # Required to identify in permission module 
+        super().__init__(**kwargs)
+        self.name = "drive"
 
     def get_queryset(self):
         """

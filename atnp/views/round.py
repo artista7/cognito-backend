@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from atnp.models import Round, College, StudentInDrive
 from atnp.serializers import RoundSerializer
 from atnp.utils import get_student_id, get_company_id, get_college_id
+from atnp.permissions import CompanyPermissions
 
 
 class RoundViewSet(viewsets.ModelViewSet):
@@ -17,6 +18,11 @@ class RoundViewSet(viewsets.ModelViewSet):
 
     queryset = Round.objects.all().order_by('-name')
     serializer_class = RoundSerializer
+
+    def __init__(self, **kwargs):
+        # Required to identify in permission module 
+        super().__init__(**kwargs)
+        self.name = "round"
 
     def get_queryset(self):
         """

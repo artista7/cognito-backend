@@ -41,7 +41,7 @@ def create_new_user(email, name, phone_number, group, instituteName):
         ] if i['Value']],
         TemporaryPassword=randomString(),
         DesiredDeliveryMediums=[
-            'SMS', 'EMAIL',
+             'EMAIL',
         ],
     )
     return response

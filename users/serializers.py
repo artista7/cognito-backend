@@ -22,7 +22,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "name": {"required": True},
             "email": {"required": True},
-            "phoneNumber": {"required": True}
+            # "phoneNumber": {"required": True}
         }
 
     # def run_validation(self, data):

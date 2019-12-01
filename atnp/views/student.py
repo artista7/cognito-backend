@@ -3,6 +3,7 @@ from rest_framework import viewsets
 
 from atnp.models import Student
 from atnp.serializers import StudentSerializer
+from atnp.permissions import CompanyPermissions
 
 from atnp.utils import get_student_id, get_company_id, get_college_id
 
@@ -13,6 +14,11 @@ class StudentViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Student.objects.all().order_by('-name')
     serializer_class = StudentSerializer
+
+    def __init__(self, **kwargs):
+        # Required to identify in permission module 
+        super().__init__(**kwargs)
+        self.name = "student"
 
     def get_queryset(self):
         """

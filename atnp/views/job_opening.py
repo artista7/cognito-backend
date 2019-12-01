@@ -5,6 +5,7 @@ from rest_framework import viewsets
 from atnp.models import JobOpening, StudentInDrive
 from atnp.serializers import JobOpeningSerializer
 from atnp.utils import get_student_id, get_company_id, get_college_id
+from atnp.permissions import CompanyPermissions
 
 
 class JobOpeningViewSet(viewsets.ModelViewSet):
@@ -15,6 +16,11 @@ class JobOpeningViewSet(viewsets.ModelViewSet):
 
     queryset = JobOpening.objects.all().order_by('-name')
     serializer_class = JobOpeningSerializer
+
+    def __init__(self, **kwargs):
+        # Required to identify in permission module 
+        super().__init__(**kwargs)
+        self.name = "jobopening"
 
     def get_queryset(self):
         # TODO: Add rolewise access, superuser should have access to everything

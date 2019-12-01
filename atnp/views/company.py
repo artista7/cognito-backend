@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from atnp.models import Company
 from atnp.serializers import CompanySerializer
 from atnp.utils import get_company_id
+from atnp.permissions import CompanyPermissions
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
@@ -14,6 +15,11 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
     queryset = Company.objects.all().order_by('-name')
     serializer_class = CompanySerializer
+
+    def __init__(self, **kwargs):
+        # Required to identify in permission module 
+        super().__init__(**kwargs)
+        self.name = "company"
 
     def get_queryset(self):
         """

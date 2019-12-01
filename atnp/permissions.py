@@ -132,3 +132,28 @@ class CompanyInDrivePermission(permissions.BasePermission):
 #                 return True
 #         return False
 #
+
+class CompanyPermissions(permissions.BasePermission):
+    """
+        Has permission to edit college
+    """
+
+    def has_permission(self, request, view):
+        college_id = get_college_id(request.user.username)
+        print(request.data)
+        print("View", view, view.name)
+        if view.action == 'create':
+            print(type(request.data.get("college_id")), type(college_id))
+            print(request.data.get("college_id"))
+            print(college_id)
+            return request.data.get("college_id") == str(college_id)
+        if view.action == 'list':
+            return True
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_authenticated :
+            college_id = get_college_id(request.user.username)
+            if obj.college_id == college_id:
+                return True
+        return True
