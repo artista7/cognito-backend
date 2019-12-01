@@ -37,6 +37,16 @@ def create_new_user(email, name, phone_number, group, instituteName):
             },        {
                 'Name': 'custom:companyName',
                 'Value': str(instituteName) if group == "company" else None,
+                
+            }, 
+            {
+                'Name': 'phone_number_verified',
+                'Value': 'True'
+            }
+            , 
+            {
+                'Name': 'email_verified',
+                'Value': 'True'
             }
         ] if i['Value']],
         TemporaryPassword=randomString(),
@@ -44,6 +54,7 @@ def create_new_user(email, name, phone_number, group, instituteName):
              'EMAIL',
         ],
     )
+    print("AWS_RESPONSE",response)
     return response
 
 

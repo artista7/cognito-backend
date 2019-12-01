@@ -55,12 +55,13 @@ def org_users(request):
                 create_new_user(data["email"], data["name"],
                                 data.get("phoneNumber"), "college", data["college"].id)
                 new_user_instance = new_user.create(validated_data=data)
-                new_user.college = data["college"]
-                return Response(new_user.data)
+                new_user_instance.college = data["college"]
+                new_user_instance.save()
+                return Response(CustomUserSerializer(new_user_instance).data)
             except Exception as e:
                 import traceback 
                 print(traceback.print_exc())
-                return Response({"error": str(e)})
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         elif user.company:
             data["company"] = user.company
             data["username"] = "company_" + data["email"]
@@ -69,11 +70,14 @@ def org_users(request):
             try:
                 create_new_user(data["email"], data["name"],
                                 data.get("phoneNumber"), "company", data["company"].id)
-                new_user = new_user.create(validated_data=data)
-                new_user.company = data["company"]
-                return Response(CustomUserSerializer(new_user).data)
+                new_user_instance = new_user.create(validated_data=data)
+                new_user_instance.company = data["company"]
+                new_user_instance.save()
+                return Response(CustomUserSerializer(new_user_instance).data)
             except Exception as e:
-                return Response({"error": str(e)})
+                import traceback 
+                print(traceback.print_exc())
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response({"message": "Method only available for college and company users!"},
                         status=status.HTTP_400_BAD_REQUEST)
 
