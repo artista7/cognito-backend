@@ -64,7 +64,6 @@ def org_users(request):
         elif user.company:
             data["company"] = user.company
             data["username"] = "company_" + data["email"]
-            orgType = data.pop("organizationType")
             new_user = CustomUserSerializer(data=data)
             new_user.is_valid(raise_exception=True)
             try:
@@ -91,7 +90,7 @@ def block(request, id):
             block_user(user.username)
             user.status = 'blocked'
             user.save()
-            return Response({"message": "Successfully blocked the user"})
+            return Response(CustomUserSerializer(user).data)
         except Exception as e:
             import traceback
             traceback.print_exc()
@@ -113,7 +112,7 @@ def unblock(request, id):
             unblock_user(user.username)
             user.status = 'active'
             user.save()
-            return Response({"message": "Successfully unblocked the user"})
+            return Response(CustomUserSerializer(user).data)
         except Exception as e:
             return Response({"error": str(e)},
                             status=status.HTTP_400_BAD_REQUEST)

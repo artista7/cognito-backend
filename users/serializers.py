@@ -17,7 +17,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'name', 'email',
                   'student', 'college', 'company',
-                  'phoneNumber',
+                  'phoneNumber', 'status',
                   'createdAt', 'updatedAt']
         extra_kwargs = {
             "name": {"required": True},
