@@ -8,3 +8,8 @@ cloudformation-stack/*
 env_files
 atnp/node_modules/*
 static/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
