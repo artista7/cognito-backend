@@ -44,6 +44,8 @@ urlpatterns = [
         schema_view.without_ui(cache_timeout=0), name='schema-json'),
     url(r'^docs$',  schema_view.with_ui(
         'swagger', cache_timeout=0), name='swagger_docs'),
+    url(r'^$',  schema_view.with_ui(
+        'swagger', cache_timeout=0), name='swagger_docs'),
     # url(r'',  schema_view.with_ui(
     #     'swagger', cache_timeout=0), name='swagger_docs'),
 
