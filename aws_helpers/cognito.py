@@ -2,7 +2,7 @@ import os
 import boto3
 import random
 import string
-# boto3.setup_default_session(profile_name='vivek-us-east-1')
+boto3.setup_default_session(profile_name='vivek-us-east-1')
 client = boto3.client('cognito-idp',  region_name='us-east-1')
 
 COGNITO_USER_POOL = os.environ["COGNITO_USER_POOL"]
@@ -51,7 +51,7 @@ def create_new_user(email, name, phone_number, group, instituteName):
         ] if i['Value']],
         TemporaryPassword=randomString(),
         DesiredDeliveryMediums=[
-             'EMAIL',
+             'EMAIL', 'SMS'
         ],
     )
     print("AWS_RESPONSE",response)
@@ -70,5 +70,14 @@ def unblock_user(username):
     response = client.admin_enable_user(
         UserPoolId=COGNITO_USER_POOL,
         Username=username
+    )
+    return response
+
+def confirm_signup(username, password):
+    response = client.admin_set_user_password(
+        UserPoolId=COGNITO_USER_POOL,
+        Password=password,
+        Username=username,
+        Permanent=True
     )
     return response

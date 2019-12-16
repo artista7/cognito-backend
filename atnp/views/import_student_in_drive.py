@@ -47,8 +47,11 @@ def import_students(request):
                 studentObjects.append(student_serializer)
 
             if not studentErrors:
+                print(len(studentObjects))
                 for studentObject in studentObjects:
-                    studentObject.save()
+                    obj = studentObject.save()
+                    print(obj)
+
                 return Response({"message": "Registered students successfully!"})
             else:
                 return Response({"error": studentErrors},

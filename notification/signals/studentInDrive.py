@@ -24,7 +24,9 @@ def studentInDriveSignalHandler(**kwargs):
         Thanks,
         Learning Sage Team  
         """.format(name, collegeName, driveName, studentCollegeId, registrationCode)
-        response = send_email(to_address=email, subject=subject, body=body)
+        print("EMAIL")
+        # TODO: Remove comment
+        # response = send_email(to_address=email, subject=subject, body=body)
 
     elif kwargs.get("update_fields"):
         # When Update field changed is student the add subscription to drive and studentInDrive

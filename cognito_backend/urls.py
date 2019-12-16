@@ -33,6 +33,7 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path('atnp/', include('atnp.urls', namespace='atnp')),
+    path('scheduled_tasks/', include('scheduled_tasks.urls', namespace='scheduled_tasks')),
     path('user/', include('users.urls', namespace='users')),
     path('todo/', include('todo.urls', namespace='todo')),
     path('notification/', include('notification.urls', namespace='notification')),

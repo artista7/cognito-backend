@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import datetime
+from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -70,7 +71,10 @@ INSTALLED_APPS = [
     'users',
     'todo',
     'notification',
-    'core'
+    'scheduled_tasks',
+    'core',
+    'django_celery_results',
+    'django_celery_beat'
 ]
 CSRF_TRUSTED_ORIGINS = ['localhost:3000', '*.learning-sage.com']
 
@@ -227,3 +231,32 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 COGNITO_AWS_REGION = os.environ['COGNITO_AWS_REGION']  # 'eu-central-1'
 COGNITO_USER_POOL = os.environ['COGNITO_USER_POOL']   # 'eu-central-1_xYzaq'
 COGNITO_AUDIENCE = os.environ['COGNITO_AUDIENCE']
+
+# Celery Settings 
+# BROKER_URL = 'django://'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'
+
+# CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+print(os.environ)
+if os.environ.get("LOCAL_FLAG"):
+    print("JJJJJ")
+    CELERY_BROKER_URL = 'sqs://{}:{}@'.format(os.environ.get("AWS_KEY_ID"), os.environ.get("AWS_SECRET"))
+else:
+    CELERY_BROKER_URL = 'sqs://'
+
+CELERY_TASK_DEFAULT_QUEUE = 'celery-cognito-backend-{}'.format(os.environ["ENV"])
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+# Other Celery settings
+CELERY_BEAT_SCHEDULE = {
+    'task-number-one': {
+        # 'task': 'sales_emails',
+        'task': "scheduled_tasks.tasks.send_sales_emails",
+        'schedule': crontab(),
+        'args': ()
+    }
+}
+

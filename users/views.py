@@ -1,7 +1,7 @@
 from django.middleware.csrf import get_token
 from django.http import JsonResponse
 from django.shortcuts import render
-
+import copy 
 # Create your views here.
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
@@ -40,7 +40,7 @@ class UserViewSet(viewsets.ModelViewSet):
 def signup(request):
     print(request.method)
     if request.method == 'POST':
-        data = request.data
+        data = copy.deepcopy(request.data)
         if "college" in data:
             college = data.pop("college")
             user = CustomUserSerializer(data=data)
@@ -54,7 +54,7 @@ def signup(request):
                 data=college, context={"request": request})
             if not college.is_valid():
                 user_object.delete()
-                return Response({"message": "BAD REQUEST", "errors": student.errors},
+                return Response({"message": "BAD REQUEST", "errors": college.errors},
                                 status=status.HTTP_400_BAD_REQUEST)
             college.save()
         elif "company" in data:

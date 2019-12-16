@@ -456,6 +456,10 @@ class StudentInDrive(models.Model):
     # Field name made lowercase.
     studentPhone = models.CharField(
         db_column='studentPhone', max_length=255, blank=True, null=True)
+    branch = models.CharField(
+        db_column='branch', max_length=255, blank=True, null=True)
+    cgpa = models.FloatField(
+        db_column='cgpa', blank=True, null=True)
     # Field name made lowercase.
     createdAt = models.DateTimeField(db_column='createdAt', auto_now_add=True)
     # Field name made lowercase.
