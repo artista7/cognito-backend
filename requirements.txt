@@ -16,4 +16,3 @@ django-celery-results
 django-celery-beat
 croniter
 celery[sqs]
-pycurl
