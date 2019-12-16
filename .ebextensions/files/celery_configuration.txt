@@ -7,7 +7,7 @@ celeryenv=${celeryenv%?}
 # Create celery configuraiton script
 celeryconf="[program:celeryd-worker]
 ; Set full path to celery program if using virtualenv
-command=/opt/python/run/venv/bin/celery worker -A cognito_backend --loglevel=INFO
+command=source /opt/python/run/venv/bin/activate && celery worker -A cognito_backend --loglevel=INFO
 
 directory=/opt/python/current/app
 user=nobody
@@ -35,7 +35,7 @@ environment=$celeryenv
 
 [program:celeryd-beat]
 ; Set full path to celery program if using virtualenv
-command=/opt/python/run/venv/bin/celery beat -A cognito_backend --loglevel=INFO --workdir=/tmp -S django --pidfile /tmp/celerybeat.pid
+command=source /opt/python/run/venv/bin/activate && celery beat -A cognito_backend --loglevel=INFO --workdir=/tmp -S django --pidfile /tmp/celerybeat.pid
 
 directory=/opt/python/current/app
 user=nobody
