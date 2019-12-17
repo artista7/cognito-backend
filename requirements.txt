@@ -16,4 +16,4 @@ django-celery-results
 django-celery-beat
 croniter
 celery[sqs]
-pycurl
+pycurl  --install-option="--with-openssl" --install-option="--openssl-dir=/usr/local/opt/openssl"
