@@ -67,11 +67,7 @@ def send_raw_email(to_address, subject, body):
                 'Data':msg.as_string(),
             },
         )
-    # Display an error if something goes wrong.	
-    except ClientError as e:
+    except Exception as e:
         print(e.response['Error']['Message'])
-    else:
-        print("Email sent! Message ID:"),
-        print(response['MessageId'])
     
     return response
