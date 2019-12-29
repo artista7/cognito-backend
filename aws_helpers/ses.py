@@ -18,7 +18,7 @@ def send_email(to_address, subject, body):
                 'Charset': 'UTF-8'
             },
             'Body': {
-                'Text': {
+                'Html': {
                     'Data': body,
                     'Charset': 'UTF-8'
                 }
