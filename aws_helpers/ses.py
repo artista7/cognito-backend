@@ -59,15 +59,15 @@ def send_raw_email(to_address, subject, body):
     try:
         #Provide the contents of the email.
         response = client.send_raw_email(
-            Source=SENDER,
-            Destinations=[
-                RECIPIENT
-            ],
+            Source=SOURCE_EMAIL,
+            Destinations=
+                to_address.split(',')
+            ,
             RawMessage={
                 'Data':msg.as_string(),
             },
         )
     except Exception as e:
-        print(e.response['Error']['Message'])
+        print(response['Error']['Message'])
     
     return response
