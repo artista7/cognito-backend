@@ -56,9 +56,6 @@ def send_raw_email(to_address, subject, body):
     # parent container.
     msg.attach(msg_body)
 
-    # Add the attachment to the parent container.
-    msg.attach(att)
-    #print(msg)
     try:
         #Provide the contents of the email.
         response = client.send_raw_email(
