@@ -227,6 +227,10 @@ AUTH_USER_MODEL = 'users.User'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+STATICFILES_DIRS = [
+    'images/',
+]
+
 # Cognito
 COGNITO_AWS_REGION = os.environ['COGNITO_AWS_REGION']  # 'eu-central-1'
 COGNITO_USER_POOL = os.environ['COGNITO_USER_POOL']   # 'eu-central-1_xYzaq'

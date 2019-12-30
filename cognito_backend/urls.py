@@ -4,10 +4,12 @@ from rest_framework import routers
 from atnp import views
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 from django.conf.urls import url
+from django.conf import settings
 # from rest_framework_swagger.views import get_swagger_view
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from django.conf.urls.static import static
 
 from cognito_backend.custom_login_view import ObtainJSONWebToken
 
@@ -49,4 +51,4 @@ urlpatterns = [
     # url(r'',  schema_view.with_ui(
     #     'swagger', cache_timeout=0), name='swagger_docs'),
 
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
