@@ -5,8 +5,8 @@ from email.mime.application import MIMEApplication
 
 # boto3.setup_default_session(profile_name='vivek-us-east-1')
 client = boto3.client('ses',  region_name='us-east-1')
-SOURCE_EMAIL = "notifications@learning-sage.com"
-
+# SOURCE_EMAIL = "notifications@learning-sage.com"
+SOURCE_EMAIL = '"Shubham Gupta" <shubham.gupta@learning-sage.com>'
 
 def send_email(to_address, subject, body):
     to_address = [to_address] if type(to_address) == str else to_address
