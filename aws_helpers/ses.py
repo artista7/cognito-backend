@@ -32,13 +32,16 @@ def send_email(to_address, subject, body):
     return response
 
 
+
 def send_raw_email(to_address, subject, body):
     # Create a multipart/mixed parent container.
     msg = MIMEMultipart('mixed')
     # Add subject, from and to lines.
     msg['Subject'] = subject 
     msg['From'] = SOURCE_EMAIL 
-    msg['To'] = to_address
+    # msg['To'] = to_address
+    msg['Bcc'] = to_address
+
     CHARSET = 'utf-8'
 
     # Create a multipart/alternative child container.
